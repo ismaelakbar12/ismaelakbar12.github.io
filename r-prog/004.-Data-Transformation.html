@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Penulis : Ismail Akbar | Prof. Dr. Suhartono M.Kom | Magister Informatika | UIN Maulana Malik Ibrahim Malang" />
+
+
+<title>Transformasi Data dengan dplyr</title>
+
+<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Ismail Akbar</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="Data-Type-and-Structur-in-R-Programming.html">Struktur R-Programing</a>
+</li>
+<li>
+  <a href="002.-Data-Visualization-dengan-GgPlot2.html">Visualisasi Data</a>
+</li>
+<li>
+  <a href="004.-Data-Transformation.html">Transformasi Data</a>
+</li>
+<li>
+  <a href="006.-Web-Scraping.html">Crawl Data</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Transformasi Data dengan dplyr</h1>
+<h4 class="author">Penulis : Ismail Akbar | Prof. Dr. Suhartono M.Kom | Magister Informatika | UIN Maulana Malik Ibrahim Malang</h4>
+<h4 class="date">24 Februari 2021</h4>
+
+</div>
+
+
+<div id="a.-pengantar" class="section level3">
+<h3>A. Pengantar</h3>
+<p><strong>Transformasi</strong> Data adalah satu langkah dalam menangani data yang tidak sesuai dengan asumsi model, dan juga digunakan untuk memaksa variabel yang berbeda agar memiliki distribusi yang serupa.</p>
+<p><strong>dplyr</strong> adalah satu paket yang dibangun dengan tujuan tunggal untuk menyederhanakan proses manipulasi, pengurutan, peringkasan, dan penggabungan frame data. Fungsi dasar dari transformasi data yang ditawarkan paket <strong>dplyr</strong> ini adalah :</p>
+<ul>
+<li><strong>select()</strong> : Memilih variabel</li>
+<li><strong>filter()</strong> : Menyediakan kemampuan pemfilteran dasar</li>
+<li><strong>group_by()</strong> : Mengelompokkan data berdasarkan tingkat kategori</li>
+<li><strong>summarise()</strong> : Meringkas data berdasarkan fungsi pilihan</li>
+<li><strong>arrange()</strong> : Data pesanan</li>
+<li><strong>join()</strong> : Bergabung dengan dataframe terpisah</li>
+<li><strong>mutate()</strong> : Membuat variabel baru</li>
+</ul>
+<p><strong>Catatan</strong> untuk menerapkan beberapa fungsi <strong>dplyr</strong>, kami disini menggunakan data kualitas udara.</p>
+</div>
+<div id="filter" class="section level2">
+<h2>1. Filter</h2>
+<p>Memfilter data adalah tugas umum untuk mengidentifikasi / memilih pengamatan di mana variabel tertentu cocok dengan nilai / kondisi tertentu.</p>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code># memilih 5 baris dari data kualitas udara
+airquality[1:5,] </code></pre>
+<pre><code>##   Ozone Solar.R Wind Temp Month Day
+## 1    41     190  7.4   67     5   1
+## 2    36     118  8.0   72     5   2
+## 3    12     149 12.6   74     5   3
+## 4    18     313 11.5   62     5   4
+## 5    NA      NA 14.3   56     5   5</code></pre>
+<p>Di sini kita dapat menggunakan fungsi filter untuk keuntungan kita dan memilih hanya beberapa variabel dengan membuat kondisi yang memfilter dataset.</p>
+<pre class="r"><code># membuat variabel a untuk menyimpan data
+a = filter(airquality,Month == 7, Day == 2)
+
+# menampilkan data
+a</code></pre>
+<pre><code>##   Ozone Solar.R Wind Temp Month Day
+## 1    49     248  9.2   85     7   2</code></pre>
+</div>
+<div id="arrange" class="section level2">
+<h2>2. Arrange</h2>
+<p>Fungsi ini bekerja dengan cara yang mirip untuk memfilter tetapi mengubah urutannya alih-alih memilih baris.</p>
+<pre class="r"><code>arrange(airquality, desc(Day))</code></pre>
+<pre><code>##     Ozone Solar.R Wind Temp Month Day
+## 1      37     279  7.4   76     5  31
+## 2      59     254  9.2   81     7  31
+## 3      85     188  6.3   94     8  31
+## 4     115     223  5.7   79     5  30
+## 5      NA     138  8.0   83     6  30
+## 6      64     253  7.4   83     7  30
+## 7      84     237  6.3   96     8  30
+## 8      20     223 11.5   68     9  30
+## 9      45     252 14.9   81     5  29
+## 10     NA      31 14.9   77     6  29
+## 11     50     275  7.4   86     7  29
+## 12    118     225  2.3   94     8  29
+## 13     18     131  8.0   76     9  29
+## 14     23      13 12.0   67     5  28
+## 15     NA      98 11.5   80     6  28
+## 16     82     213  7.4   88     7  28
+## 17     76     203  9.7   97     8  28
+## 18     14     191 14.3   75     9  28
+## 19     NA      NA  8.0   57     5  27
+## 20     NA      47 10.3   73     6  27
+## 21     52      82 12.0   86     7  27
+## 22     NA     153  5.7   88     8  27
+## 23     NA     145 13.2   77     9  27
+## 24     NA     266 14.9   58     5  26
+## 25     NA     127  8.0   78     6  26
+## 26     20      81  8.6   82     7  26
+## 27     73     215  8.0   86     8  26
+## 28     30     193  6.9   70     9  26
+## 29     NA      66 16.6   57     5  25
+## 30     NA     135  8.0   75     6  25
+## 31    108     223  8.0   85     7  25
+## 32    168     238  3.4   81     8  25
+## 33     14      20 16.6   63     9  25
+## 34     32      92 12.0   61     5  24
+## 35     NA     250  6.3   76     6  24
+## 36     80     294  8.6   86     7  24
+## 37     45     212  9.7   79     8  24
+## 38      7      49 10.3   69     9  24
+## 39      4      25  9.7   61     5  23
+## 40     NA      91  4.6   76     6  23
+## 41     NA     295 11.5   82     7  23
+## 42     NA     255 12.6   75     8  23
+## 43     36     139 10.3   81     9  23
+## 44     11     320 16.6   73     5  22
+## 45     NA      59  1.7   76     6  22
+## 46     NA     258  9.7   81     7  22
+## 47      9      36 14.3   72     8  22
+## 48     23      14  9.2   71     9  22
+## 49      1       8  9.7   59     5  21
+## 50     NA     150  6.3   77     6  21
+## 51     16       7  6.9   74     7  21
+## 52     21     259 15.5   77     8  21
+## 53     13     238 12.6   64     9  21
+## 54     11      44  9.7   62     5  20
+## 55     13     137 10.3   76     6  20
+## 56     63     220 11.5   85     7  20
+## 57     44     190 10.3   78     8  20
+## 58     16     201  8.0   82     9  20
+## 59     30     322 11.5   68     5  19
+## 60     12     120 11.5   73     6  19
+## 61     79     187  5.1   87     7  19
+## 62     31     244 10.9   78     8  19
+## 63     24     238 10.3   68     9  19
+## 64      6      78 18.4   57     5  18
+## 65     20      37  9.2   65     6  18
+## 66     61     285  6.3   84     7  18
+## 67     23     115  7.4   76     8  18
+## 68     13      27 10.3   76     9  18
+## 69     34     307 12.0   66     5  17
+## 70     37     284 20.7   72     6  17
+## 71     35     274 10.3   82     7  17
+## 72     59      51  6.3   79     8  17
+## 73     18     224 13.8   67     9  17
+## 74     14     334 11.5   64     5  16
+## 75     21     191 14.9   77     6  16
+## 76     48     260  6.9   81     7  16
+## 77     22      71 10.3   77     8  16
+## 78     46     237  6.9   78     9  16
+## 79     18      65 13.2   58     5  15
+## 80     NA     322 11.5   79     6  15
+## 81      7      48 14.3   80     7  15
+## 82     NA      64 11.5   79     8  15
+## 83     13     112 11.5   71     9  15
+## 84     14     274 10.9   68     5  14
+## 85     NA     332 13.8   80     6  14
+## 86     NA     291 14.9   91     7  14
+## 87     65     157  9.7   80     8  14
+## 88      9      24 10.9   71     9  14
+## 89     11     290  9.2   66     5  13
+## 90     23     148  8.0   82     6  13
+## 91     27     175 14.9   81     7  13
+## 92     28     273 11.5   82     8  13
+## 93     28     238  6.3   77     9  13
+## 94     16     256  9.7   69     5  12
+## 95     NA     250  9.2   92     6  12
+## 96     10     264 14.3   73     7  12
+## 97     44     192 11.5   86     8  12
+## 98     21     259 15.5   76     9  12
+## 99      7      NA  6.9   74     5  11
+## 100    NA     259 10.9   93     6  11
+## 101    NA     139  8.6   82     7  11
+## 102    NA     137 11.5   86     8  11
+## 103    44     236 14.9   81     9  11
+## 104    NA     194  8.6   69     5  10
+## 105    39     323 11.5   87     6  10
+## 106    85     175  7.4   89     7  10
+## 107    NA     222  8.6   92     8  10
+## 108    24     259  9.7   73     9  10
+## 109     8      19 20.1   61     5   9
+## 110    71     291 13.8   90     6   9
+## 111    97     272  5.7   92     7   9
+## 112   110     207  8.0   90     8   9
+## 113    21     230 10.9   75     9   9
+## 114    19      99 13.8   59     5   8
+## 115    NA     273  6.9   87     6   8
+## 116    97     267  6.3   92     7   8
+## 117    89     229 10.3   90     8   8
+## 118    23     220 10.3   78     9   8
+## 119    23     299  8.6   65     5   7
+## 120    29     127  9.7   82     6   7
+## 121    77     276  5.1   88     7   7
+## 122   122     255  4.0   89     8   7
+## 123    20     252 10.9   80     9   7
+## 124    28      NA 14.9   66     5   6
+## 125    NA     264 14.3   79     6   6
+## 126    40     314 10.9   83     7   6
+## 127    66      NA  4.6   87     8   6
+## 128    32      92 15.5   84     9   6
+## 129    NA      NA 14.3   56     5   5
+## 130    NA     220  8.6   85     6   5
+## 131    64     175  4.6   83     7   5
+## 132    35      NA  7.4   85     8   5
+## 133    47      95  7.4   87     9   5
+## 134    18     313 11.5   62     5   4
+## 135    NA     186  9.2   84     6   4
+## 136    NA     101 10.9   84     7   4
+## 137    78      NA  6.9   86     8   4
+## 138    91     189  4.6   93     9   4
+## 139    12     149 12.6   74     5   3
+## 140    NA     242 16.1   67     6   3
+## 141    32     236  9.2   81     7   3
+## 142    16      77  7.4   82     8   3
+## 143    73     183  2.8   93     9   3
+## 144    36     118  8.0   72     5   2
+## 145    NA     287  9.7   74     6   2
+## 146    49     248  9.2   85     7   2
+## 147     9      24 13.8   81     8   2
+## 148    78     197  5.1   92     9   2
+## 149    41     190  7.4   67     5   1
+## 150    NA     286  8.6   78     6   1
+## 151   135     269  4.1   84     7   1
+## 152    39      83  6.9   81     8   1
+## 153    96     167  6.9   91     9   1</code></pre>
+<p>kita dapat menggunakan lebih dari satu nama variabel untuk mengurutkan dataframe tetapi urutan preferensi dalam penyortiran akan selalu dengan variabel pertama yang disebutkan.</p>
+</div>
+<div id="select" class="section level2">
+<h2>3. Select</h2>
+<p>Fungsi ini memungkinkan untuk memilih beberapa variabel dengan namanya atau dengan beberapa variasi dan mengabaikan yang tidak berguna. Funsgi Select hanya memberi kesempatan untuk mempertimbangkan variabel yang diperlukan dan terbukti efektif dalam konteks tertentu.</p>
+<pre class="r"><code>select(airquality,Ozone,Month)</code></pre>
+<pre><code>##     Ozone Month
+## 1      41     5
+## 2      36     5
+## 3      12     5
+## 4      18     5
+## 5      NA     5
+## 6      28     5
+## 7      23     5
+## 8      19     5
+## 9       8     5
+## 10     NA     5
+## 11      7     5
+## 12     16     5
+## 13     11     5
+## 14     14     5
+## 15     18     5
+## 16     14     5
+## 17     34     5
+## 18      6     5
+## 19     30     5
+## 20     11     5
+## 21      1     5
+## 22     11     5
+## 23      4     5
+## 24     32     5
+## 25     NA     5
+## 26     NA     5
+## 27     NA     5
+## 28     23     5
+## 29     45     5
+## 30    115     5
+## 31     37     5
+## 32     NA     6
+## 33     NA     6
+## 34     NA     6
+## 35     NA     6
+## 36     NA     6
+## 37     NA     6
+## 38     29     6
+## 39     NA     6
+## 40     71     6
+## 41     39     6
+## 42     NA     6
+## 43     NA     6
+## 44     23     6
+## 45     NA     6
+## 46     NA     6
+## 47     21     6
+## 48     37     6
+## 49     20     6
+## 50     12     6
+## 51     13     6
+## 52     NA     6
+## 53     NA     6
+## 54     NA     6
+## 55     NA     6
+## 56     NA     6
+## 57     NA     6
+## 58     NA     6
+## 59     NA     6
+## 60     NA     6
+## 61     NA     6
+## 62    135     7
+## 63     49     7
+## 64     32     7
+## 65     NA     7
+## 66     64     7
+## 67     40     7
+## 68     77     7
+## 69     97     7
+## 70     97     7
+## 71     85     7
+## 72     NA     7
+## 73     10     7
+## 74     27     7
+## 75     NA     7
+## 76      7     7
+## 77     48     7
+## 78     35     7
+## 79     61     7
+## 80     79     7
+## 81     63     7
+## 82     16     7
+## 83     NA     7
+## 84     NA     7
+## 85     80     7
+## 86    108     7
+## 87     20     7
+## 88     52     7
+## 89     82     7
+## 90     50     7
+## 91     64     7
+## 92     59     7
+## 93     39     8
+## 94      9     8
+## 95     16     8
+## 96     78     8
+## 97     35     8
+## 98     66     8
+## 99    122     8
+## 100    89     8
+## 101   110     8
+## 102    NA     8
+## 103    NA     8
+## 104    44     8
+## 105    28     8
+## 106    65     8
+## 107    NA     8
+## 108    22     8
+## 109    59     8
+## 110    23     8
+## 111    31     8
+## 112    44     8
+## 113    21     8
+## 114     9     8
+## 115    NA     8
+## 116    45     8
+## 117   168     8
+## 118    73     8
+## 119    NA     8
+## 120    76     8
+## 121   118     8
+## 122    84     8
+## 123    85     8
+## 124    96     9
+## 125    78     9
+## 126    73     9
+## 127    91     9
+## 128    47     9
+## 129    32     9
+## 130    20     9
+## 131    23     9
+## 132    21     9
+## 133    24     9
+## 134    44     9
+## 135    21     9
+## 136    28     9
+## 137     9     9
+## 138    13     9
+## 139    46     9
+## 140    18     9
+## 141    13     9
+## 142    24     9
+## 143    16     9
+## 144    13     9
+## 145    23     9
+## 146    36     9
+## 147     7     9
+## 148    14     9
+## 149    30     9
+## 150    NA     9
+## 151    14     9
+## 152    18     9
+## 153    20     9</code></pre>
+<pre class="r"><code>select(airquality,Ozone:Month)</code></pre>
+<pre><code>##     Ozone Solar.R Wind Temp Month
+## 1      41     190  7.4   67     5
+## 2      36     118  8.0   72     5
+## 3      12     149 12.6   74     5
+## 4      18     313 11.5   62     5
+## 5      NA      NA 14.3   56     5
+## 6      28      NA 14.9   66     5
+## 7      23     299  8.6   65     5
+## 8      19      99 13.8   59     5
+## 9       8      19 20.1   61     5
+## 10     NA     194  8.6   69     5
+## 11      7      NA  6.9   74     5
+## 12     16     256  9.7   69     5
+## 13     11     290  9.2   66     5
+## 14     14     274 10.9   68     5
+## 15     18      65 13.2   58     5
+## 16     14     334 11.5   64     5
+## 17     34     307 12.0   66     5
+## 18      6      78 18.4   57     5
+## 19     30     322 11.5   68     5
+## 20     11      44  9.7   62     5
+## 21      1       8  9.7   59     5
+## 22     11     320 16.6   73     5
+## 23      4      25  9.7   61     5
+## 24     32      92 12.0   61     5
+## 25     NA      66 16.6   57     5
+## 26     NA     266 14.9   58     5
+## 27     NA      NA  8.0   57     5
+## 28     23      13 12.0   67     5
+## 29     45     252 14.9   81     5
+## 30    115     223  5.7   79     5
+## 31     37     279  7.4   76     5
+## 32     NA     286  8.6   78     6
+## 33     NA     287  9.7   74     6
+## 34     NA     242 16.1   67     6
+## 35     NA     186  9.2   84     6
+## 36     NA     220  8.6   85     6
+## 37     NA     264 14.3   79     6
+## 38     29     127  9.7   82     6
+## 39     NA     273  6.9   87     6
+## 40     71     291 13.8   90     6
+## 41     39     323 11.5   87     6
+## 42     NA     259 10.9   93     6
+## 43     NA     250  9.2   92     6
+## 44     23     148  8.0   82     6
+## 45     NA     332 13.8   80     6
+## 46     NA     322 11.5   79     6
+## 47     21     191 14.9   77     6
+## 48     37     284 20.7   72     6
+## 49     20      37  9.2   65     6
+## 50     12     120 11.5   73     6
+## 51     13     137 10.3   76     6
+## 52     NA     150  6.3   77     6
+## 53     NA      59  1.7   76     6
+## 54     NA      91  4.6   76     6
+## 55     NA     250  6.3   76     6
+## 56     NA     135  8.0   75     6
+## 57     NA     127  8.0   78     6
+## 58     NA      47 10.3   73     6
+## 59     NA      98 11.5   80     6
+## 60     NA      31 14.9   77     6
+## 61     NA     138  8.0   83     6
+## 62    135     269  4.1   84     7
+## 63     49     248  9.2   85     7
+## 64     32     236  9.2   81     7
+## 65     NA     101 10.9   84     7
+## 66     64     175  4.6   83     7
+## 67     40     314 10.9   83     7
+## 68     77     276  5.1   88     7
+## 69     97     267  6.3   92     7
+## 70     97     272  5.7   92     7
+## 71     85     175  7.4   89     7
+## 72     NA     139  8.6   82     7
+## 73     10     264 14.3   73     7
+## 74     27     175 14.9   81     7
+## 75     NA     291 14.9   91     7
+## 76      7      48 14.3   80     7
+## 77     48     260  6.9   81     7
+## 78     35     274 10.3   82     7
+## 79     61     285  6.3   84     7
+## 80     79     187  5.1   87     7
+## 81     63     220 11.5   85     7
+## 82     16       7  6.9   74     7
+## 83     NA     258  9.7   81     7
+## 84     NA     295 11.5   82     7
+## 85     80     294  8.6   86     7
+## 86    108     223  8.0   85     7
+## 87     20      81  8.6   82     7
+## 88     52      82 12.0   86     7
+## 89     82     213  7.4   88     7
+## 90     50     275  7.4   86     7
+## 91     64     253  7.4   83     7
+## 92     59     254  9.2   81     7
+## 93     39      83  6.9   81     8
+## 94      9      24 13.8   81     8
+## 95     16      77  7.4   82     8
+## 96     78      NA  6.9   86     8
+## 97     35      NA  7.4   85     8
+## 98     66      NA  4.6   87     8
+## 99    122     255  4.0   89     8
+## 100    89     229 10.3   90     8
+## 101   110     207  8.0   90     8
+## 102    NA     222  8.6   92     8
+## 103    NA     137 11.5   86     8
+## 104    44     192 11.5   86     8
+## 105    28     273 11.5   82     8
+## 106    65     157  9.7   80     8
+## 107    NA      64 11.5   79     8
+## 108    22      71 10.3   77     8
+## 109    59      51  6.3   79     8
+## 110    23     115  7.4   76     8
+## 111    31     244 10.9   78     8
+## 112    44     190 10.3   78     8
+## 113    21     259 15.5   77     8
+## 114     9      36 14.3   72     8
+## 115    NA     255 12.6   75     8
+## 116    45     212  9.7   79     8
+## 117   168     238  3.4   81     8
+## 118    73     215  8.0   86     8
+## 119    NA     153  5.7   88     8
+## 120    76     203  9.7   97     8
+## 121   118     225  2.3   94     8
+## 122    84     237  6.3   96     8
+## 123    85     188  6.3   94     8
+## 124    96     167  6.9   91     9
+## 125    78     197  5.1   92     9
+## 126    73     183  2.8   93     9
+## 127    91     189  4.6   93     9
+## 128    47      95  7.4   87     9
+## 129    32      92 15.5   84     9
+## 130    20     252 10.9   80     9
+## 131    23     220 10.3   78     9
+## 132    21     230 10.9   75     9
+## 133    24     259  9.7   73     9
+## 134    44     236 14.9   81     9
+## 135    21     259 15.5   76     9
+## 136    28     238  6.3   77     9
+## 137     9      24 10.9   71     9
+## 138    13     112 11.5   71     9
+## 139    46     237  6.9   78     9
+## 140    18     224 13.8   67     9
+## 141    13      27 10.3   76     9
+## 142    24     238 10.3   68     9
+## 143    16     201  8.0   82     9
+## 144    13     238 12.6   64     9
+## 145    23      14  9.2   71     9
+## 146    36     139 10.3   81     9
+## 147     7      49 10.3   69     9
+## 148    14      20 16.6   63     9
+## 149    30     193  6.9   70     9
+## 150    NA     145 13.2   77     9
+## 151    14     191 14.3   75     9
+## 152    18     131  8.0   76     9
+## 153    20     223 11.5   68     9</code></pre>
+</div>
+<div id="mutate" class="section level2">
+<h2>4. Mutate</h2>
+<p>Fungsi ini biasanya digunakan untuk membuat satu set variabel baru dan di fitur baru lainnya untuk ditambahkan ke dataframe. Fungsi ini memiliki kegunaan penting juga karena membantu membuat variabel baru dari variabel yang ada sekaligus dan bekerja lebih baik. Dengan kata lain, kita dapat membuat beberapa variabel baru sekaligus menggunakan fungsi mutate dan menambahkannya ke dataframe yang ada.</p>
+<pre class="r"><code>mutate(airquality,Ozonepercent = Ozone/100 )</code></pre>
+<pre><code>##     Ozone Solar.R Wind Temp Month Day Ozonepercent
+## 1      41     190  7.4   67     5   1         0.41
+## 2      36     118  8.0   72     5   2         0.36
+## 3      12     149 12.6   74     5   3         0.12
+## 4      18     313 11.5   62     5   4         0.18
+## 5      NA      NA 14.3   56     5   5           NA
+## 6      28      NA 14.9   66     5   6         0.28
+## 7      23     299  8.6   65     5   7         0.23
+## 8      19      99 13.8   59     5   8         0.19
+## 9       8      19 20.1   61     5   9         0.08
+## 10     NA     194  8.6   69     5  10           NA
+## 11      7      NA  6.9   74     5  11         0.07
+## 12     16     256  9.7   69     5  12         0.16
+## 13     11     290  9.2   66     5  13         0.11
+## 14     14     274 10.9   68     5  14         0.14
+## 15     18      65 13.2   58     5  15         0.18
+## 16     14     334 11.5   64     5  16         0.14
+## 17     34     307 12.0   66     5  17         0.34
+## 18      6      78 18.4   57     5  18         0.06
+## 19     30     322 11.5   68     5  19         0.30
+## 20     11      44  9.7   62     5  20         0.11
+## 21      1       8  9.7   59     5  21         0.01
+## 22     11     320 16.6   73     5  22         0.11
+## 23      4      25  9.7   61     5  23         0.04
+## 24     32      92 12.0   61     5  24         0.32
+## 25     NA      66 16.6   57     5  25           NA
+## 26     NA     266 14.9   58     5  26           NA
+## 27     NA      NA  8.0   57     5  27           NA
+## 28     23      13 12.0   67     5  28         0.23
+## 29     45     252 14.9   81     5  29         0.45
+## 30    115     223  5.7   79     5  30         1.15
+## 31     37     279  7.4   76     5  31         0.37
+## 32     NA     286  8.6   78     6   1           NA
+## 33     NA     287  9.7   74     6   2           NA
+## 34     NA     242 16.1   67     6   3           NA
+## 35     NA     186  9.2   84     6   4           NA
+## 36     NA     220  8.6   85     6   5           NA
+## 37     NA     264 14.3   79     6   6           NA
+## 38     29     127  9.7   82     6   7         0.29
+## 39     NA     273  6.9   87     6   8           NA
+## 40     71     291 13.8   90     6   9         0.71
+## 41     39     323 11.5   87     6  10         0.39
+## 42     NA     259 10.9   93     6  11           NA
+## 43     NA     250  9.2   92     6  12           NA
+## 44     23     148  8.0   82     6  13         0.23
+## 45     NA     332 13.8   80     6  14           NA
+## 46     NA     322 11.5   79     6  15           NA
+## 47     21     191 14.9   77     6  16         0.21
+## 48     37     284 20.7   72     6  17         0.37
+## 49     20      37  9.2   65     6  18         0.20
+## 50     12     120 11.5   73     6  19         0.12
+## 51     13     137 10.3   76     6  20         0.13
+## 52     NA     150  6.3   77     6  21           NA
+## 53     NA      59  1.7   76     6  22           NA
+## 54     NA      91  4.6   76     6  23           NA
+## 55     NA     250  6.3   76     6  24           NA
+## 56     NA     135  8.0   75     6  25           NA
+## 57     NA     127  8.0   78     6  26           NA
+## 58     NA      47 10.3   73     6  27           NA
+## 59     NA      98 11.5   80     6  28           NA
+## 60     NA      31 14.9   77     6  29           NA
+## 61     NA     138  8.0   83     6  30           NA
+## 62    135     269  4.1   84     7   1         1.35
+## 63     49     248  9.2   85     7   2         0.49
+## 64     32     236  9.2   81     7   3         0.32
+## 65     NA     101 10.9   84     7   4           NA
+## 66     64     175  4.6   83     7   5         0.64
+## 67     40     314 10.9   83     7   6         0.40
+## 68     77     276  5.1   88     7   7         0.77
+## 69     97     267  6.3   92     7   8         0.97
+## 70     97     272  5.7   92     7   9         0.97
+## 71     85     175  7.4   89     7  10         0.85
+## 72     NA     139  8.6   82     7  11           NA
+## 73     10     264 14.3   73     7  12         0.10
+## 74     27     175 14.9   81     7  13         0.27
+## 75     NA     291 14.9   91     7  14           NA
+## 76      7      48 14.3   80     7  15         0.07
+## 77     48     260  6.9   81     7  16         0.48
+## 78     35     274 10.3   82     7  17         0.35
+## 79     61     285  6.3   84     7  18         0.61
+## 80     79     187  5.1   87     7  19         0.79
+## 81     63     220 11.5   85     7  20         0.63
+## 82     16       7  6.9   74     7  21         0.16
+## 83     NA     258  9.7   81     7  22           NA
+## 84     NA     295 11.5   82     7  23           NA
+## 85     80     294  8.6   86     7  24         0.80
+## 86    108     223  8.0   85     7  25         1.08
+## 87     20      81  8.6   82     7  26         0.20
+## 88     52      82 12.0   86     7  27         0.52
+## 89     82     213  7.4   88     7  28         0.82
+## 90     50     275  7.4   86     7  29         0.50
+## 91     64     253  7.4   83     7  30         0.64
+## 92     59     254  9.2   81     7  31         0.59
+## 93     39      83  6.9   81     8   1         0.39
+## 94      9      24 13.8   81     8   2         0.09
+## 95     16      77  7.4   82     8   3         0.16
+## 96     78      NA  6.9   86     8   4         0.78
+## 97     35      NA  7.4   85     8   5         0.35
+## 98     66      NA  4.6   87     8   6         0.66
+## 99    122     255  4.0   89     8   7         1.22
+## 100    89     229 10.3   90     8   8         0.89
+## 101   110     207  8.0   90     8   9         1.10
+## 102    NA     222  8.6   92     8  10           NA
+## 103    NA     137 11.5   86     8  11           NA
+## 104    44     192 11.5   86     8  12         0.44
+## 105    28     273 11.5   82     8  13         0.28
+## 106    65     157  9.7   80     8  14         0.65
+## 107    NA      64 11.5   79     8  15           NA
+## 108    22      71 10.3   77     8  16         0.22
+## 109    59      51  6.3   79     8  17         0.59
+## 110    23     115  7.4   76     8  18         0.23
+## 111    31     244 10.9   78     8  19         0.31
+## 112    44     190 10.3   78     8  20         0.44
+## 113    21     259 15.5   77     8  21         0.21
+## 114     9      36 14.3   72     8  22         0.09
+## 115    NA     255 12.6   75     8  23           NA
+## 116    45     212  9.7   79     8  24         0.45
+## 117   168     238  3.4   81     8  25         1.68
+## 118    73     215  8.0   86     8  26         0.73
+## 119    NA     153  5.7   88     8  27           NA
+## 120    76     203  9.7   97     8  28         0.76
+## 121   118     225  2.3   94     8  29         1.18
+## 122    84     237  6.3   96     8  30         0.84
+## 123    85     188  6.3   94     8  31         0.85
+## 124    96     167  6.9   91     9   1         0.96
+## 125    78     197  5.1   92     9   2         0.78
+## 126    73     183  2.8   93     9   3         0.73
+## 127    91     189  4.6   93     9   4         0.91
+## 128    47      95  7.4   87     9   5         0.47
+## 129    32      92 15.5   84     9   6         0.32
+## 130    20     252 10.9   80     9   7         0.20
+## 131    23     220 10.3   78     9   8         0.23
+## 132    21     230 10.9   75     9   9         0.21
+## 133    24     259  9.7   73     9  10         0.24
+## 134    44     236 14.9   81     9  11         0.44
+## 135    21     259 15.5   76     9  12         0.21
+## 136    28     238  6.3   77     9  13         0.28
+## 137     9      24 10.9   71     9  14         0.09
+## 138    13     112 11.5   71     9  15         0.13
+## 139    46     237  6.9   78     9  16         0.46
+## 140    18     224 13.8   67     9  17         0.18
+## 141    13      27 10.3   76     9  18         0.13
+## 142    24     238 10.3   68     9  19         0.24
+## 143    16     201  8.0   82     9  20         0.16
+## 144    13     238 12.6   64     9  21         0.13
+## 145    23      14  9.2   71     9  22         0.23
+## 146    36     139 10.3   81     9  23         0.36
+## 147     7      49 10.3   69     9  24         0.07
+## 148    14      20 16.6   63     9  25         0.14
+## 149    30     193  6.9   70     9  26         0.30
+## 150    NA     145 13.2   77     9  27           NA
+## 151    14     191 14.3   75     9  28         0.14
+## 152    18     131  8.0   76     9  29         0.18
+## 153    20     223 11.5   68     9  30         0.20</code></pre>
+<p>Jika kita bermaksud untuk menyimpan hanya variabel yang baru dibuat maka kita dapat menggunakan <strong>transmute</strong> karena itu menetapkan tujuan membuat kerangka data hanya variabel yang baru dibuat dan kita tidak perlu membuat variabel satu per satu karena itu membutuhkan waktu dan mengurangi produktivitas kita dan tujuan menggunakan bahasa R secara efisien.</p>
+<pre class="r"><code>transmute(airquality,Ozonepercent = Ozone/100 )</code></pre>
+<pre><code>##     Ozonepercent
+## 1           0.41
+## 2           0.36
+## 3           0.12
+## 4           0.18
+## 5             NA
+## 6           0.28
+## 7           0.23
+## 8           0.19
+## 9           0.08
+## 10            NA
+## 11          0.07
+## 12          0.16
+## 13          0.11
+## 14          0.14
+## 15          0.18
+## 16          0.14
+## 17          0.34
+## 18          0.06
+## 19          0.30
+## 20          0.11
+## 21          0.01
+## 22          0.11
+## 23          0.04
+## 24          0.32
+## 25            NA
+## 26            NA
+## 27            NA
+## 28          0.23
+## 29          0.45
+## 30          1.15
+## 31          0.37
+## 32            NA
+## 33            NA
+## 34            NA
+## 35            NA
+## 36            NA
+## 37            NA
+## 38          0.29
+## 39            NA
+## 40          0.71
+## 41          0.39
+## 42            NA
+## 43            NA
+## 44          0.23
+## 45            NA
+## 46            NA
+## 47          0.21
+## 48          0.37
+## 49          0.20
+## 50          0.12
+## 51          0.13
+## 52            NA
+## 53            NA
+## 54            NA
+## 55            NA
+## 56            NA
+## 57            NA
+## 58            NA
+## 59            NA
+## 60            NA
+## 61            NA
+## 62          1.35
+## 63          0.49
+## 64          0.32
+## 65            NA
+## 66          0.64
+## 67          0.40
+## 68          0.77
+## 69          0.97
+## 70          0.97
+## 71          0.85
+## 72            NA
+## 73          0.10
+## 74          0.27
+## 75            NA
+## 76          0.07
+## 77          0.48
+## 78          0.35
+## 79          0.61
+## 80          0.79
+## 81          0.63
+## 82          0.16
+## 83            NA
+## 84            NA
+## 85          0.80
+## 86          1.08
+## 87          0.20
+## 88          0.52
+## 89          0.82
+## 90          0.50
+## 91          0.64
+## 92          0.59
+## 93          0.39
+## 94          0.09
+## 95          0.16
+## 96          0.78
+## 97          0.35
+## 98          0.66
+## 99          1.22
+## 100         0.89
+## 101         1.10
+## 102           NA
+## 103           NA
+## 104         0.44
+## 105         0.28
+## 106         0.65
+## 107           NA
+## 108         0.22
+## 109         0.59
+## 110         0.23
+## 111         0.31
+## 112         0.44
+## 113         0.21
+## 114         0.09
+## 115           NA
+## 116         0.45
+## 117         1.68
+## 118         0.73
+## 119           NA
+## 120         0.76
+## 121         1.18
+## 122         0.84
+## 123         0.85
+## 124         0.96
+## 125         0.78
+## 126         0.73
+## 127         0.91
+## 128         0.47
+## 129         0.32
+## 130         0.20
+## 131         0.23
+## 132         0.21
+## 133         0.24
+## 134         0.44
+## 135         0.21
+## 136         0.28
+## 137         0.09
+## 138         0.13
+## 139         0.46
+## 140         0.18
+## 141         0.13
+## 142         0.24
+## 143         0.16
+## 144         0.13
+## 145         0.23
+## 146         0.36
+## 147         0.07
+## 148         0.14
+## 149         0.30
+## 150           NA
+## 151         0.14
+## 152         0.18
+## 153         0.20</code></pre>
+</div>
+<div id="summarise" class="section level2">
+<h2>5. Summarise</h2>
+<p>Fungsi ini memungkinkan untuk melakukan sebagian besar statistik ringkasan awal saat melakukan analisis data eksplorasi. Dalam kata lain, mengelompokkan banyak nilai menjadi satu ringkasan.</p>
+<pre class="r"><code>summarise(airquality,ozonemean = mean(Wind))</code></pre>
+<pre><code>##   ozonemean
+## 1  9.957516</code></pre>
+<div id="referensi" class="section level3">
+<h3>Referensi</h3>
+<ol style="list-style-type: decimal">
+<li>(<a href="https://rcompanion.org/handbook/I_12.html" class="uri">https://rcompanion.org/handbook/I_12.html</a>)</li>
+<li>(<a href="https://thinkstudioo.blogspot.com/2017/12/membuat-matriks-di-r-lengkap.html" class="uri">https://thinkstudioo.blogspot.com/2017/12/membuat-matriks-di-r-lengkap.html</a>)</li>
+<li>(<a href="https://afit-r.github.io/dplyr" class="uri">https://afit-r.github.io/dplyr</a>)</li>
+<li>(<a href="https://carpentries-incubator.github.io/open-science-with-r/04-dplyr/index.html#dplyr-basics" class="uri">https://carpentries-incubator.github.io/open-science-with-r/04-dplyr/index.html#dplyr-basics</a>)</li>
+<li>(<a href="http://rstudio-pubs-static.s3.amazonaws.com/460682_ef47595d78d8431aa3b0472eee66c32f.html" class="uri">http://rstudio-pubs-static.s3.amazonaws.com/460682_ef47595d78d8431aa3b0472eee66c32f.html</a>)</li>
+</ol>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

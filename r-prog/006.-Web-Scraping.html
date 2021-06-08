@@ -1,0 +1,3026 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Penulis : Ismail Akbar | Prof. Dr. Suhartono M.Kom | Magister Informatika | UIN Maulana Malik Ibrahim Malang | https://ismaelakbar.site/" />
+
+
+<title>Web Scrapping dengan rvest pada situs Jaringan Keselamatan Penerbangan</title>
+
+<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Ismail Akbar</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="Data-Type-and-Structur-in-R-Programming.html">Struktur R-Programing</a>
+</li>
+<li>
+  <a href="002.-Data-Visualization-dengan-GgPlot2.html">Visualisasi Data</a>
+</li>
+<li>
+  <a href="004.-Data-Transformation.html">Transformasi Data</a>
+</li>
+<li>
+  <a href="006.-Web-Scraping.html">Crawl Data</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Web Scrapping dengan rvest pada situs Jaringan Keselamatan Penerbangan</h1>
+<h4 class="author">Penulis : Ismail Akbar | Prof. Dr. Suhartono M.Kom | Magister Informatika | UIN Maulana Malik Ibrahim Malang | <a href="https://ismaelakbar.site/" class="uri">https://ismaelakbar.site/</a></h4>
+<h4 class="date">06 Juni 2021</h4>
+
+</div>
+
+
+<div id="a.-pengantar" class="section level3">
+<h3>A. Pengantar</h3>
+<p>Data dan informasi di web saat ini sangat berkembang pesat. Kita semua saat ini mengakses website sebagai sumber pengetahuan pertama kita, baik itu tentang menemukan ulasan tentang suatu tempat hingga memahami istilah baru. Semua informasi ini sudah tersedia di web.</p>
+<p>Web scraping adalah proses mengekstrak data dari sebuah situs web. Salah satu contoh web scraping adalah menyalin daftar kontak dari direktori web.</p>
+<p>Web scraping akan dilakukan di situs web aviation-safety.net. Data Jaringan Keselamatan Penerbangan akan diambil untuk mengetahui data kejadian kecelakaan penerbangan yang ada di dunia dengan memanfaatkan library rvest.</p>
+<p>Package rvest ditulis oleh Hadley Wickham dari RStudio. Package ini mempunyai fungsi yang serupa dengan library beautiful soup pada Python, yaitu untuk web scraping. Langkah pertama, tentu saja, install dan load package rvest.</p>
+<div id="b.-menyiapkan-library" class="section level4">
+<h4>B. Menyiapkan library</h4>
+<p>Pertama, perlu menginstal dan memuat beberapa library yang dibutuhkan dalam kasus ini.</p>
+<pre class="r"><code>library(rvest)</code></pre>
+<pre><code>## Warning: package &#39;rvest&#39; was built under R version 4.0.4</code></pre>
+<pre><code>## Loading required package: xml2</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.3     v purrr   0.3.4
+## v tibble  3.0.6     v stringr 1.4.0
+## v tidyr   1.1.2     v forcats 0.5.1
+## v readr   1.4.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter()         masks stats::filter()
+## x readr::guess_encoding() masks rvest::guess_encoding()
+## x dplyr::lag()            masks stats::lag()
+## x purrr::pluck()          masks rvest::pluck()</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(hrbrthemes)</code></pre>
+<pre><code>## Warning: package &#39;hrbrthemes&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## NOTE: Either Arial Narrow or Roboto Condensed fonts are required to use these themes.</code></pre>
+<pre><code>##       Please use hrbrthemes::import_roboto_condensed() to install Roboto Condensed and</code></pre>
+<pre><code>##       if Arial Narrow is not on your system, please see https://bit.ly/arialnarrow</code></pre>
+</div>
+<div id="c.-membaca-data-bagian-1" class="section level4">
+<h4>C. Membaca Data Bagian 1</h4>
+<p>Pada kasus ini kita ingin membaca semua insiden yang terjadi pada tahun 2020 dengan mengakses alamat web <em>aviation-safety.net/database/dblist.php?Year=2020</em>. Akan tetapi pada halaman website tersebut menampilkan data frame lebih dari satu pada setiap tahunnya. Untungnya kita bisa mendapatkan jumlah halaman dengan menggunakan rvest juga.</p>
+<pre class="r"><code>url &lt;- &quot;http://aviation-safety.net/database/dblist.php?Year=2020&quot;
+pages &lt;- url %&gt;% html() %&gt;%
+  html_nodes(xpath = &#39;//*[@id=&quot;contentcolumnfull&quot;]/div/div[2]&#39;) %&gt;%
+  html_text() %&gt;% strsplit(&quot; &quot;) %&gt;% unlist() %&gt;%
+  as.numeric() %&gt;% max()</code></pre>
+<pre><code>## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)</code></pre>
+<pre class="r"><code>pages</code></pre>
+<pre><code>## [1] 2</code></pre>
+<p>Sekarang kita dapat menulis perulangan kecil untuk mendapatkan semua insiden pada tahun 2020, karena tautan web tersebut akan berubah dengan nomor halaman.</p>
+<pre class="r"><code># memulai data frame kosong, di mana kami akan menyimpan data
+data &lt;- data.frame(date = numeric(0), type = numeric(0), registration = numeric(0),
+                   operator = numeric(0), fatalities = numeric(0), location = numeric(0), 
+                   category = numeric(0))
+# loop melalui semua nomor halaman
+for (page in 1:pages){
+  # buat URL baru untuk halaman saat ini
+  url &lt;- paste0(&quot;http://aviation-safety.net/database/dblist.php?Year=2020&amp;lang=&amp;page=&quot;, page)
+  # mendapatkan data html dan ubah menjadi data.frame
+  incidents &lt;- url %&gt;% html() %&gt;%
+    html_nodes(xpath = &#39;//*[@id=&quot;contentcolumnfull&quot;]/div/table&#39;) %&gt;%
+    html_table() %&gt;% data.frame()
+  # menggabungkan data
+  data &lt;- rbind(data, incidents)
+}</code></pre>
+<pre><code>## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)
+
+## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)</code></pre>
+<pre class="r"><code>data</code></pre>
+<pre><code>##            date                                type registration
+## 1   02-JAN-2020                      Antonov An-12A            -
+## 2   03-JAN-2020             Harbin Yunshuji Y-12 II      SCL-857
+## 3   03-JAN-2020                        Hawker 900XP        N805D
+## 4   04-JAN-2020                 Beech B200 King Air       N200HF
+## 5   05-JAN-2020             Beech B300 King Air 350             
+## 6   08-JAN-2020                 Boeing 737-8KV (WL)       UR-PSR
+## 7   08-JAN-2020                 Boeing 737-823 (WL)       N929NN
+## 8   09-JAN-2020           Lockheed C-130BZ Hercules          403
+## 9   10-JAN-2020                Airbus A321-231 (WL)       VQ-BRS
+## 10  16-JAN-2020                 Beech B200 King Air       N547LM
+## 11  19-JAN-2020       Swearingen SA227-AC Metro III       C-GWVH
+## 12  20-JAN-2020                           DHC-8-314       C-GXAI
+## 13  23-JAN-2020           Lockheed EC-130Q Hercules       N134CG
+## 14  23-JAN-2020           Cessna S550 Citation S/II       ZS-CAR
+## 15  24-JAN-2020                     Gulfstream G150       N373ML
+## 16  27-JAN-2020                               MD-83       EP-CPZ
+## 17  27-JAN-2020   Bombardier E-11A (Global Express)      11-9358
+## 18  31-JAN-2020        Bombardier DHC-8-402Q Dash 8       C-FKWE
+## 19  01-FEB-2020               Boeing 747-412F (SCD)       TC-MCT
+## 20  03-FEB-2020                    Boeing 767-375ER       C-GHOZ
+## 21  03-FEB-2020                   Boeing 747-412BCF       N703CK
+## 22  04-FEB-2020           Cessna 208B Grand Caravan       N454SF
+## 23  05-FEB-2020                 Boeing 737-86J (WL)       TC-IZK
+## 24  06-FEB-2020           Cessna 208B Grand Caravan        N24MG
+## 25  07-FEB-2020                 Boeing 757-256 (WL)       TF-FIA
+## 26  07-FEB-2020       Cessna 208B Super Cargomaster       N988FX
+## 27  08-FEB-2020            Cessna 501 Citation I/SP       N501RG
+## 28  08-FEB-2020            Beech 200 Super King Air       CC-COT
+## 29  09-FEB-2020                 Boeing 737-524 (WL)       VQ-BPS
+## 30  12-FEB-2020          Cessna 560 Citation Encore       N654CE
+## 31  14-FEB-2020                Cessna 208 Caravan I       P2-MAI
+## 32  20-FEB-2020                       Antonov An-2T     RA-40642
+## 33  20-FEB-2020                 Beech B200 King Air        N860J
+## 34  20-FEB-2020         Cessna 510 Citation Mustang       N163TC
+## 35  21-FEB-2020          DHC-3T Vazar Turbine Otter       C-FIUZ
+## 36  23-FEB-2020           Bombardier Challenger 605       C-GKCP
+## 37  24-FEB-2020        Swearingen SA227-DC Metro 23       C-GJVB
+## 38  24-FEB-2020                DHC-6 Twin Otter 300       8Q-MBC
+## 39  25-FEB-2020                          Learjet 55       N135LR
+## 40  25-FEB-2020               Boeing 737-301 (BDSF)       PK-YSG
+## 41  26-FEB-2020                       Antonov An-2P     UP-A0001
+## 42  27-FEB-2020                  Dassault Falcon 50       N951DJ
+## 43  28-FEB-2020                Airbus A300B4-203(F)     UP-A3003
+## 44  29-FEB-2020                         Learjet 35A       N721EC
+## 45  03-MAR-2020           Cessna S550 Citation S/II        N45NC
+## 46  03-MAR-2020                Dassault Falcon 2000       N519JD
+## 47  03-MAR-2020         Cessna 525C CitationJet CJ4       N989CJ
+## 48  03-MAR-2020           Bombardier Challenger 300       N819RS
+## 49  03-MAR-2020            Beech 200 Super King Air       N186EB
+## 50  03-MAR-2020            Beech 200 Super King Air         N2PY
+## 51  03-MAR-2020                          Learjet 55       N890AC
+## 52  05-MAR-2020       Cessna 208B Super Cargomaster       N706FX
+## 53  06-MAR-2020                DHC-6 Vistaliner 300        N72GC
+## 54  08-MAR-2020                    Boeing 767-3Q8ER       N477AX
+## 55  09-MAR-2020                   Gulfstream G-IVSP       M-YWAY
+## 56  09-MAR-2020                     Airbus A330-343       HS-TEU
+## 57  12-MAR-2020            Beech 200 Super King Air      HK-5075
+## 58  12-MAR-2020          DHC-3T Vazar Turbine Otter       C-GTMW
+## 59  13-MAR-2020              Cessna 525 CitationJet       YV3452
+## 60  14-MAR-2020               Raytheon Hawker 800XP       N100AG
+## 61  17-MAR-2020       Cessna 208B Super Cargomaster       N274PM
+## 62  19-MAR-2020                Cessna 208 Caravan I       P2-MAF
+## 63  22-MAR-2020        Hawker Siddeley HS-125-F400B     (XB-PNK)
+## 64  29-MAR-2020               IAI 1124A Westwind II     RP-C5880
+## 65  05-APR-2020                       Antonov An-26     UP-AN601
+## 66  19-APR-2020                        BAe-125-700A       N700NW
+## 67  20-APR-2020                        BAe-125-800A       N375TC
+## 68  23-APR-2020   Lockheed C-130J-30 Super Hercules      11-5736
+## 69  24-APR-2020                   IAI 1125 Astra SP       YV3427
+## 70  28-APR-2020                 Beech A100 King Air       C-FCBZ
+## 71  02-MAY-2020           Beech B200 Super King Air       C-GSAE
+## 72  04-MAY-2020          Embraer EMB-120RT Brasilia       5Y-AXO
+## 73  04-MAY-2020                         Learjet 25D       LV-WOC
+## 74  05-MAY-2020                         Learjet 35A       LV-BXU
+## 75  07-MAY-2020              Hawker Siddeley HS-125       XB-RBF
+## 76  08-MAY-2020                         Beech 1900C       N31704
+## 77  09-MAY-2020                        Learjet 60XR       5A-UAE
+## 78  09-MAY-2020                      Ilyushin Il-78      no reg.
+## 79  16-MAY-2020                         Let L-410MA     RA-67066
+## 80  19-MAY-2020                 Boeing 737-8Q8 (WL)       N820TJ
+## 81  20-MAY-2020            Cessna 501 Citation I/SP       N501KM
+## 82  21-MAY-2020 Embraer C-95BM Bandeirante (EMB-110      FAB2347
+## 83  22-MAY-2020                     Airbus A320-214       AP-BLD
+## 84  26-MAY-2020            Beech 200 Super King Air             
+## 85  28-MAY-2020                        BAe-125-700A       N720PT
+## 86  30-MAY-2020            Beech 200 Super King Air             
+## 87  30-MAY-2020                DHC-6 Twin Otter 100        N52FW
+## 88  08-JUN-2020           Lockheed C-130H3 Hercules      94-6706
+## 89  13-JUN-2020        Beech 300 Super King Air 350       N858UP
+## 90  14-JUN-2020                    Airbus A320-271N       VP-BWC
+## 91  14-JUN-2020                     Airbus A320-232       VP-BDL
+## 92  15-JUN-2020        Grumman G-1159 Gulfstream II        N27SL
+## 93  16-JUN-2020                   DHC-8-402Q Dash 8       G-JECK
+## 94  19-JUN-2020 Gulfstream American G-1159A Gulfstr       N516TR
+## 95  02-JUL-2020     Grumman G-1159 Gulfstream II SP       XB-NRX
+## 96  05-JUL-2020                        BAe-125-700A       XB-RCM
+## 97  07-JUL-2020                        Hawker 800XP       N339AV
+## 98  13-JUL-2020                       Antonov An-2R     RA-40851
+## 99  13-JUL-2020                   BN-2A-27 Islander       N200MU
+## 100 14-JUL-2020              DHC-8-402Q (PF) Dash 8       5Y-VVU
+## 101 15-JUL-2020            Beech B300 King Air 350i       EM-809
+## 102 17-JUL-2020            Beech 200 Super King Air       C-FSKQ
+## 103 19-JUL-2020                       Antonov An-2R     RA-71276
+## 104 20-JUL-2020           Beech B200 Super King Air        N740P
+## 105 22-JUL-2020                      Boeing 777-F60       ET-ARH
+## 106 22-JUL-2020                 Beech Beechjet 400A       N425BJ
+## 107 25-JUL-2020           Cessna 208B Grand Caravan       XA-FTG
+## 108 26-JUL-2020 Gulfstream Aerospace G-1159A Gulfst       N450BD
+## 109 30-JUL-2020            Beech 200 Super King Air       N515BA
+## 110 01-AUG-2020                Airbus A321-211 (WL)       VP-BAX
+## 111 03-AUG-2020                 Antonov An-72TK-100     RA-74044
+## 112 04-AUG-2020                      Harbin Y-12-II       KAF128
+## 113 07-AUG-2020                 Boeing 737-8HG (WL)       VT-AXH
+## 114 08-AUG-2020                     Canadair CL-215       EC-HET
+## 115 08-AUG-2020                             BAe-125             
+## 116 09-AUG-2020                        BAe-125-800A       XB-RAY
+## 117 10-AUG-2020             Rockwell Sabreliner 75A       N400RS
+## 118 12-AUG-2020                 Beech B200 King Air       N316JP
+## 119 13-AUG-2020                     Let L-410UVP-E3       9S-GEN
+## 120 16-AUG-2020           Cessna 208B Grand Caravan       5Y-SAV
+## 121 18-AUG-2020                ATR 72-600 (72-212A)       6V-ASN
+## 122 19-AUG-2020                   Boeing 767-3S2FER       N146FE
+## 123 20-AUG-2020            Beech 200 Super King Air       N198DM
+## 124 22-AUG-2020                      Antonov An-26B       EX-126
+## 125 27-AUG-2020                     Boeing 747SP-21       VQ-BMS
+## 126 28-AUG-2020                    Boeing 767-324ER       N423AX
+## 127 29-AUG-2020                 Dassault Falcon 200       XB-OAP
+## 128 29-AUG-2020                 Boeing 737-81D (WL)       JA73NM
+## 129 07-SEP-2020              Gulfstream G200 Galaxy       PR-AUR
+## 130 07-SEP-2020           Cessna 208B Grand Caravan       N186GC
+## 131 11-SEP-2020           Cessna 208B Grand Caravan     5Y-CDH ?
+## 132 15-SEP-2020                  Beech 200 King Air             
+## 133 18-SEP-2020                             Learjet             
+## 134 19-SEP-2020                           Fokker 50       5Y-MHT
+## 135 21-SEP-2020                          Learjet 35   false reg.
+## 136 22-SEP-2020           Cessna 208B Grand Caravan    HK-4669-G
+## 137 23-SEP-2020                        BAe-125-800A       XB-PYZ
+## 138 25-SEP-2020                     Antonov An-26Sh    76 yellow
+## 139 25-SEP-2020                             BAe-125             
+## 140 27-SEP-2020             Canadair Challenger 600       N100QR
+## 141 28-SEP-2020                        Antonov An-2             
+## 142 29-SEP-2020           Lockheed KC-130J Hercules       166765
+## 143 04-OCT-2020 Gulfstream American G-1159A Gulfstr       N305LR
+## 144 05-OCT-2020                             BAe-125             
+## 145 05-OCT-2020                DHC-6 Twin Otter 300       8Q-TMF
+## 146 10-OCT-2020           Cessna 208B Grand Caravan       5H-NWA
+## 147 10-OCT-2020                Douglas C-54E (DC-4)       N96358
+## 148 14-OCT-2020                      Antonov An-32A    OB-2120-P
+## 149 22-OCT-2020                DHC-6 Twin Otter 300       8Q-TMR
+## 150 23-OCT-2020        Bombardier DHC-8-402Q Dash 8       JA845A
+## 151 29-OCT-2020                   BN-2A-26 Islander       N706MC
+## 152 29-OCT-2020 Gulfstream American G-1159A Gulfstr     N461AR ?
+## 153 30-OCT-2020                  Embraer Phenom 100       PR-LMP
+## 154 31-OCT-2020       Cessna AC-208B Combat Caravan       YI-118
+## 155 05-NOV-2020       Swearingen SA227-AC Metro III       LV-VDJ
+## 156 09-NOV-2020              Rockwell Sabreliner 65       XA-VD.
+## 157 11-NOV-2020                        BAe-125-800B             
+## 158 13-NOV-2020                  Antonov An-124-100     RA-82042
+## 159 15-NOV-2020     Grumman G-1159 Gulfstream II SP       N104VV
+## 160 16-NOV-2020                ATR 72-500 (72-212A)       VT-TMM
+## 161 23-NOV-2020                           DHC-7-110       VP-FBQ
+## 162 23-NOV-2020                           DHC-8-314       C-FEXZ
+## 163 23-NOV-2020                  Beech 200 King Air       HB-GJM
+## 164 26-NOV-2020                          ATR 42-300       C-FAFS
+## 165 30-NOV-2020           Cessna 208B Grand Caravan       C6-AWO
+## 166 01-DEC-2020                DHC-6 Vistaliner 300       P2-ASM
+## 167 02-DEC-2020                      Boeing 737-529       EY-560
+## 168 02-DEC-2020           Cessna 551 Citation II/SP        N48DK
+## 169 05-DEC-2020                 Beech A100 King Air       C-FWYO
+## 170 05-DEC-2020                        BAe-125-800A       N484AR
+## 171 09-DEC-2020                       Antonov An-2R     UR-33642
+## 172 10-DEC-2020 Gulfstream Aerospace G-1159A Gulfst     (N370JL)
+## 173 13-DEC-2020                         Eclipse 500       N686TM
+## 174 19-DEC-2020                        BAe-125-700A     (N326TD)
+## 175 20-DEC-2020               Raytheon Hawker 800XP       N412JA
+## 176 30-DEC-2020            Cessna 208B Supervan 900       PZ-TSK
+##                                          operator  fat.             location
+## 1                                        Sudan AF    18 near Geneina Airp...
+## 2                                    Sri Lanka AF     4        near Haputale
+## 3                            Million Air San Juan     0      San Juan-Fer...
+## 4                         L.C. Whitford Co., Inc.     0      Morristown M...
+## 5                                 L3 Technologies     2      Manda Bay-Ca...
+## 6                  Ukraine International Airlines   176       near Sabashahr
+## 7                               American Airlines     0      New York-La ...
+## 8                                South African AF     0      Goma Airport...
+## 9                               Nordwind Airlines     0      Antalya Airp...
+## 10                                 LifeMed Alaska     0 near Unalaska-Tom...
+## 11                             Perimeter Aviation     0      Shamattawa A...
+## 12                                      Air Inuit     0      Scheffervill...
+## 13                               Coulson Aviation     3      near Cooma, NSW
+## 14                                       S.A. CAA     3    near Friemersheim
+## 15                           Compass Aviation LLC     0      San Juan-Fer...
+## 16                               Caspian Airlines     0      Bandar Mahsh...
+## 17                                           USAF     2     near Sharana FOB
+## 18                                 WestJet Encore     0      Terrace Airp...
+## 19                ACT Airlines, opf Saudi Arabian     0      Dammam-King ...
+## 20                                     Air Canada     0      Madrid-Baraj...
+## 21                                    Kalitta Air     0      Los Angeles ...
+## 22                                 Grant Aviation     0      Hooper Bay A...
+## 23                               Pegasus Airlines     3      Istanbul-Sab...
+## 24                  Redding Aero Enterprises Inc.     0 near Eureka-Murra...
+## 25                                     Icelandair     0      Keflavík Int...
+## 26                  Mountain Air Cargo, opf FedEx     0      Baltimore/Wa...
+## 27                                    Remonia Air     4   near Fairmount, GA
+## 28                            Transportes Torreon     0      Rio Bueno-Fu...
+## 29                                          Utair     0      Usinsk Airpo...
+## 30                           SC Cole Aviation LLC     0    near Benbrook, TX
+## 31                                            MAF     0      Miyanmin Air...
+## 32                                       T-Cement     0      Magadan-13 A...
+## 33                Lauren Engineers &amp; Constructors     3 near Lake Coleman...
+## 34                                        private     0      Daytona Beac...
+## 35                                    Harbour Air     0      Vancouver-Co...
+## 36                       Canadian Pacific Railway     0      Calgary Inte...
+## 37      Bearskin Airlines, opb Perimeter Aviation     0      Dryden Regio...
+## 38                        Trans Maldivian Airways     0      Kuredu Islan...
+## 39                         Expectra Aviation Inc.     0      Belmar/Farmi...
+## 40                            Trigana Air Service     0      Jayapura-Sen...
+## 41                                     Orlan 2000     0 near Ust-Kamenogo...
+## 42                                        private     0      Toronto-Butt...
+## 43                                 Sigma Airlines     0      Sharjah Airp...
+## 44                                East Coast Jets     0      Altoona Airp...
+## 45                                        private     0      Nashville-Jo...
+## 46                          Caridad Aviation, LLC     0      Nashville-Jo...
+## 47                                        Textron     0      Nashville-Jo...
+## 48                                 Legacy Air LLC     0      Nashville-Jo...
+## 49                Executive Business Aviation Inc     0      Nashville-Jo...
+## 50                                    AT Aero LLC     0      Nashville-Jo...
+## 51                              Jetleg Management     0      Nashville-Jo...
+## 52                             FedEx, opb CSA Air     0      Rhinelander-...
+## 53                          Grand Canyon Airlines     0      Boulder City...
+## 54                         Omni Air International     0      Shannon Airp...
+## 55                         Platinum Jet Co., Ltd.     0      Vientiane-Wa...
+## 56                     Thai Airways International     0      Vientiane-Wa...
+## 57                                        private     2      Claura Arrib...
+## 58                          Martini Aviation Ltd.     0      Fort Langley...
+## 59                                        Unknown     2      Porlamar-del...
+## 60                               Gemini Air Group     0      Phoenix-Scot...
+## 61                                   Planemasters     1 near La Crosse, R...
+## 62                                            MAF     0      Yenkisa Airs...
+## 63                                        private     0 near Caballo Blan...
+## 64                                   Lionair Inc.     8      Manila-Ninoy...
+## 65                           Libyan National Army               near Tarhuna
+## 66                                        private     2 near Las Cruces, ...
+## 67                                        private     0      Laguna del T...
+## 68                                           USAF     0      Ramstein AFB...
+## 69                            Inversiones SC 2012     0      Fort Lauderd...
+## 70                                Buffalo Airways     0      Kugaaruk Air...
+## 71                       Province of Saskatchewan     0 near Lloydminster...
+## 72                        African Express Airways     6 near Bardale Airs...
+## 73                         Dos Mil Aerosistema SA     0      San Fernando...
+## 74                                         MD Fly     3 near Esquel Airpo...
+## 75                                        private     0      southern Zul...
+## 76                                    Ameriflight     0      San Antonio ...
+## 77                                United Aviation     0      Tripoli-Miti...
+## 78                               Libyan Air Force     0      Tripoli-Miti...
+## 79                                        Unknown     0       Ulang Airstrip
+## 80                                      Swift Air     0 near Victorville-...
+## 81                                 McWilliams LLC     0      Houston Inte...
+## 82                                   Brazilian AF     0      Natal Air Fo...
+## 83                                            PIA 97+ 1 near Karachi-Jinn...
+## 84                                        private     0 near Morocoy, Qui...
+## 85                                        private     0       near Sarteneja
+## 86                                        private     0      Región Costa...
+## 87     Kapowsin Air Sports, opf Skydive San Diego     0      San Diego-Br...
+## 88                                           USAF     0      Al Taji Army...
+## 89                        Gama Aviation Signature     0      Bedford-Hans...
+## 90                                    S7 Airlines     0      Saint Peters...
+## 91                                  Ural Airlines     0      Saint Peters...
+## 92                                        private     1      Machiques de...
+## 93                        Nordic Aviation Capital     0      Aberdeen-Dyc...
+## 94                                        private     0      El Chico, Re...
+## 95                                        private     0           Mapastepec
+## 96                                        private     0 near José Maria M...
+## 97                                        private     0      within Venez...
+## 98                                      Zeus-Avia     2 near Kistenevo, B...
+## 99                            Tropic Air Charters     0      Fort Lauderd...
+## 100                            Blue Bird Aviation     0      Beledweyne-U...
+## 101                                Turkish Police     7 near Van-Ferit Me...
+## 102                               Skyjet Aviation     0      Rouyn Airpor...
+## 103                                       Phoenix  &lt;NA&gt;      Buryatia region
+## 104                                       private     0     near Brus Laguna
+## 105                            Ethiopian Airlines     0      Shanghai Pud...
+## 106                                    N425BJ LLC     0      Montgomery R...
+## 107                                AX Transporter     0      Holbox Airstrip
+## 108                                       private     0 near El Chal, Pet...
+## 109                                       private     0      Rio Negro, Z...
+## 110                                      Aeroflot     0      Moskva-Shere...
+## 111                           UTair-Cargo, opf UN     0      Gao Airport ...
+## 112                                     Kenyan AF     0      Dhobley Airs...
+## 113                             Air India Express    21      Kozhikode-Ca...
+## 114                            ANEPC, opb Babcock     1         near Lindoso
+## 115                                       private     0                Ixcán
+## 116                                       private     0 near Maracaibo-La...
+## 117                                       private     2       near Paraguaná
+## 118                                       private     0      Santa Ana, B...
+## 119                               Doren Air Congo     4 near Bukavu-Kavum...
+## 120                                     City Link     0      New Fangak A...
+## 121                                   Air Senegal     0      Ziguinchor A...
+## 122                                         FedEx     0      Los Angeles ...
+## 123                                     Bomac Air     1      Chicago/Rock...
+## 124                           South West Aviation     7 near Juba Airport...
+## 125                   Las Vegas Sands Corporation     0      Lake Charles...
+## 126                        Omni Air International     0      Bucharest Ba...
+## 127                                       private     0      Palenque Air...
+## 128                              Skymark Airlines     0 near Tokyo-Haneda...
+## 129                                        W.R.V.     0      Belo Horizon...
+## 130                         Grand Canyon Airlines     0      Whitmore-Gra...
+## 131                                       Unknown     0      Maji Moto ar...
+## 132                                       private     0      Machiques de...
+## 133                                       private     0                Zanja
+## 134 Silverstone Air Services, opf Saacid Airlines     0      Mogadishu Ad...
+## 135                                       private     0        Santha Martha
+## 136                                       private     0 near Guaymaral Ai...
+## 137                                       private     4      Alta Verapaz...
+## 138                             Ukraine Air Force    26 near Chuhuiv Air ...
+## 139                                       private  &lt;NA&gt;      Catatumbo, E...
+## 140                                       private     0      Sur del Lago...
+## 141                                       Unknown     0         near Martuni
+## 142                                          USMC     0 near Salton City, CA
+## 143                                       private     0      Machiques, Z...
+## 144                                       private     0      Sergio Butró...
+## 145                       Trans Maldivian Airways     0      Malé-Velana ...
+## 146                                Duk Air Travel     0      Mundri Airstrip
+## 147                               Alaska Air Fuel     0      Yakataga Air...
+## 148                                AerCaribe Peru     0      Iquitos-Coro...
+## 149                       Trans Maldivian Airways     0      Medhafushi W...
+## 150                           Oriental Air Bridge     0      Fukue Airpor...
+## 151                 St. Bernard Parish Government     0      New Orleans-...
+## 152                                       private     3      Laguna del T...
+## 153                                       TRACBEL     0      Igaratinga-S...
+## 154                                      Iraqi AF     2           near Balad
+## 155                        Dos Mil Aerosistema SA     0      Mendoza-El P...
+## 156                                       private     1      El Chico, Ch...
+## 157                                       private     0      Parque Nacio...
+## 158                                   Volga-Dnepr     0      Novosibirsk-...
+## 159                                       private     0      Caño Amarill...
+## 160                                        TruJet     0      Mysore Airpo...
+## 161                      British Antarctic Survey     0      North Bay Ai...
+## 162                              Voyageur Airways     0      North Bay Ai...
+## 163                                  Air-Glaciers     0      Sion Airport...
+## 164                        Calm Air International     0      Naujaat Airp...
+## 165                   Royal Bahamas Defence Force     0      George Town-...
+## 166                                     Air Sanga     0      Wobagen Airs...
+## 167                                  Air Djibouti     0      Garowe Airpo...
+## 168                        Aviation Star S II LLC     0      Lufkin Angel...
+## 169                       Airco Aircraft Charters     0      Edmonton Int...
+## 170                                       private  &lt;NA&gt;      Jesús María ...
+## 171                                       private     1 near Zolota Slobo...
+## 172                                       private     0      southern Belize
+## 173                                       private     0      Leadville Ai...
+## 174                                       private     1      Parque Nacio...
+## 175                                     Talon Air     0      Farmingdale-...
+## 176                            Blue Wing Airlines     0      Kawemhaken-L...
+##     Var.7 pic cat
+## 1      NA  NA  A1
+## 2      NA  NA  A1
+## 3      NA  NA  A1
+## 4      NA  NA  A2
+## 5      NA  NA  C1
+## 6      NA  NA  C1
+## 7      NA  NA  A2
+## 8      NA  NA  A1
+## 9      NA  NA  A1
+## 10     NA  NA  A1
+## 11     NA  NA  A2
+## 12     NA  NA  A2
+## 13     NA  NA  A1
+## 14     NA  NA  A1
+## 15     NA  NA  A2
+## 16     NA  NA  A1
+## 17     NA  NA  A1
+## 18     NA  NA  A2
+## 19     NA  NA  A2
+## 20     NA  NA  I2
+## 21     NA  NA  A2
+## 22     NA  NA  A2
+## 23     NA  NA  A1
+## 24     NA  NA  A2
+## 25     NA  NA  A2
+## 26     NA  NA  A2
+## 27     NA  NA  A1
+## 28     NA  NA  O1
+## 29     NA  NA  A2
+## 30     NA  NA  A2
+## 31     NA  NA  A2
+## 32     NA  NA  A1
+## 33     NA  NA  A1
+## 34     NA  NA  A2
+## 35     NA  NA  O2
+## 36     NA  NA  A2
+## 37     NA  NA  A2
+## 38     NA  NA  A2
+## 39     NA  NA  A2
+## 40     NA  NA  A2
+## 41     NA  NA  A1
+## 42     NA  NA  O1
+## 43     NA  NA  A2
+## 44     NA  NA  A2
+## 45     NA  NA  O1
+## 46     NA  NA  O1
+## 47     NA  NA  O1
+## 48     NA  NA  O1
+## 49     NA  NA  O1
+## 50     NA  NA  O1
+## 51     NA  NA  O1
+## 52     NA  NA  A1
+## 53     NA  NA  A2
+## 54     NA  NA  A2
+## 55     NA  NA  A2
+## 56     NA  NA  A2
+## 57     NA  NA  A1
+## 58     NA  NA  A2
+## 59     NA  NA  A1
+## 60     NA  NA  A1
+## 61     NA  NA  A1
+## 62     NA  NA  A2
+## 63     NA  NA  A1
+## 64     NA  NA  A1
+## 65     NA  NA  C1
+## 66     NA  NA  A1
+## 67     NA  NA  C1
+## 68     NA  NA  A1
+## 69     NA  NA  A2
+## 70     NA  NA  A2
+## 71     NA  NA  A2
+## 72     NA  NA  C1
+## 73     NA  NA  O2
+## 74     NA  NA  A1
+## 75     NA  NA  C1
+## 76     NA  NA  A2
+## 77     NA  NA  C1
+## 78     NA  NA  C1
+## 79     NA  NA  A2
+## 80     NA  NA  A2
+## 81     NA  NA  A2
+## 82     NA  NA  A2
+## 83     NA  NA  A1
+## 84     NA  NA  C1
+## 85     NA  NA  A1
+## 86     NA  NA  C1
+## 87     NA  NA  A2
+## 88     NA  NA  A1
+## 89     NA  NA  A2
+## 90     NA  NA  A2
+## 91     NA  NA  A2
+## 92     NA  NA  C1
+## 93     NA  NA  A2
+## 94     NA  NA  C1
+## 95     NA  NA  C1
+## 96     NA  NA  C1
+## 97     NA  NA  C1
+## 98     NA  NA  A1
+## 99     NA  NA  A2
+## 100    NA  NA  A1
+## 101    NA  NA  A1
+## 102    NA  NA  A2
+## 103    NA  NA  A1
+## 104    NA  NA  C1
+## 105    NA  NA  O1
+## 106    NA  NA  A2
+## 107    NA  NA  A2
+## 108    NA  NA  C1
+## 109    NA  NA  C1
+## 110    NA  NA  O2
+## 111    NA  NA  A1
+## 112    NA  NA  A2
+## 113    NA  NA  A1
+## 114    NA  NA  A1
+## 115    NA  NA  C1
+## 116    NA  NA  C1
+## 117    NA  NA  C1
+## 118    NA  NA  C1
+## 119    NA  NA  A1
+## 120    NA  NA  A1
+## 121    NA  NA  A2
+## 122    NA  NA  A2
+## 123    NA  NA  A1
+## 124    NA  NA  A1
+## 125    NA  NA  O1
+## 126    NA  NA  A2
+## 127    NA  NA  A1
+## 128    NA  NA  A2
+## 129    NA  NA  A2
+## 130    NA  NA  A2
+## 131    NA  NA  A1
+## 132    NA  NA  C1
+## 133    NA  NA  C1
+## 134    NA  NA  A1
+## 135    NA  NA  A1
+## 136    NA  NA  A2
+## 137    NA  NA  A1
+## 138    NA  NA  A1
+## 139    NA  NA  C1
+## 140    NA  NA  C1
+## 141    NA  NA  C1
+## 142    NA  NA  A2
+## 143    NA  NA  C1
+## 144    NA  NA  C1
+## 145    NA  NA  A1
+## 146    NA  NA  A2
+## 147    NA  NA  A2
+## 148    NA  NA  A1
+## 149    NA  NA  A2
+## 150    NA  NA  A2
+## 151    NA  NA  O2
+## 152    NA  NA  A1
+## 153    NA  NA  A1
+## 154    NA  NA  A1
+## 155    NA  NA  A2
+## 156    NA  NA  A1
+## 157    NA  NA  C1
+## 158    NA  NA  A1
+## 159    NA  NA  C1
+## 160    NA  NA  A2
+## 161    NA  NA  O2
+## 162    NA  NA  O2
+## 163    NA  NA  A2
+## 164    NA  NA  A2
+## 165    NA  NA  A2
+## 166    NA  NA  A2
+## 167    NA  NA  A2
+## 168    NA  NA  A2
+## 169    NA  NA  A2
+## 170    NA  NA  A1
+## 171    NA  NA  A1
+## 172    NA  NA  C1
+## 173    NA  NA  A2
+## 174    NA  NA  A1
+## 175    NA  NA  A1
+## 176    NA  NA  A2</code></pre>
+<p>Kemudian dari data frame yang sudah kita dapat baru kita buatkan visualisasi data dari Data Jaringan Keselamatan Penerbangan tahun 2020, dengan memanfaatkan library ggplot2.</p>
+<pre class="r"><code>ggplot(data, aes(date, fat.)) +
+    geom_col(fill = &quot;olivedrab2&quot;) +
+    labs(
+      x = &quot;Tanggal&quot;,
+      y = &quot;Jumlah Kematian&quot;,
+      title = &quot;Data Jaringan Keselamatan Penerbangan&quot;,
+      caption = &quot;Sumber data: http://aviation-safety.net&quot;
+    ) +
+    theme_ipsum(
+      base_size = 13,
+      plot_title_size = 21,
+      grid = &quot;Y&quot;,
+      ticks = TRUE
+    ) +
+    theme(plot.title.position = &quot;plot&quot;)</code></pre>
+<pre><code>## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
+## found in Windows font database
+
+## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
+## found in Windows font database
+
+## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
+## found in Windows font database</code></pre>
+<pre><code>## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database</code></pre>
+<pre><code>## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database</code></pre>
+<pre><code>## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database</code></pre>
+<p><img src="006.-Web-Scraping_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="d.-membaca-data-bagian-2" class="section level4">
+<h4>D. Membaca Data Bagian 2</h4>
+<p>Bagaimana caranya kita mendapatkan data selama beberapa tahun? Maka kita perlu mengatur nilai tahun awal dan tahun akhir.</p>
+<pre class="r"><code># pengaturan nilai awal
+startyear &lt;- 2018
+endyear &lt;- 2020
+url_init &lt;- &quot;http://aviation-safety.net/database/dblist.php?Year=&quot;
+
+dat &lt;- data.frame(date = numeric(0), type = numeric(0), registration = numeric(0),
+  operator = numeric(0), fatalities = numeric(0),
+  location = numeric(0), category = numeric(0))
+for (year in startyear:endyear){
+  # dapatkan url untuk tahun ini
+  url_year &lt;- paste0(url_init, year)
+  # dapatkan halaman
+  pages &lt;- url_year %&gt;% html() %&gt;%
+    html_nodes(xpath = &#39;//*[@id=&quot;contentcolumnfull&quot;]/div/div[2]&#39;) %&gt;%
+    html_text() %&gt;% strsplit(&quot; &quot;) %&gt;% unlist() %&gt;%
+    as.numeric() %&gt;% max()
+  # ulangi melalui halaman
+  for (page in 1:pages){
+    url &lt;- paste0(url_year,&quot;&amp;lang=&amp;page=&quot;, page)
+    # mendapatkan data html dan ubah menjadi data.frame
+    incidents &lt;- url %&gt;% html() %&gt;%
+      html_nodes(xpath = &#39;//*[@id=&quot;contentcolumnfull&quot;]/div/table&#39;) %&gt;%
+      html_table() %&gt;% data.frame()
+    # menggabungkan data
+    dat &lt;- rbind(dat, incidents)
+  }
+}</code></pre>
+<pre><code>## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)
+
+## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)
+
+## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)
+
+## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)
+
+## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)
+
+## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)
+
+## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)
+
+## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)
+
+## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)
+
+## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)
+
+## Warning: &#39;html&#39; is deprecated.
+## Use &#39;xml2::read_html&#39; instead.
+## See help(&quot;Deprecated&quot;)</code></pre>
+<pre class="r"><code>dat</code></pre>
+<pre><code>##            date                                type registration
+## 1   04-JAN-2018                     Gulfstream G150       OE-GKA
+## 2   05-JAN-2018                 Boeing 737-8CT (WL)       C-FDMB
+## 3   05-JAN-2018                 Boeing 737-8FH (WL)       C-FPRP
+## 4   06-JAN-2018                      Antonov An-2TP       YV1944
+## 5   07-JAN-2018           Cessna 208B Grand Caravan       5Y-FDC
+## 6   09-JAN-2018       Embraer EMB-110P1 Bandeirante       C6-MIC
+## 7   10-JAN-2018      Swearingen SA227-AT Merlin IVC       N561UP
+## 8   13-JAN-2018                 Boeing 737-82R (WL)       TC-CPF
+## 9   15-JAN-2018                     Airbus A319-111       5A-ONC
+## 10  16-JAN-2018             BAe BAe-748-347 Srs. 2A       S2-AAX
+## 11  16-JAN-2018                        Antonov An-2             
+## 12  17-JAN-2018               IPTN/CASA CN-235M-100       98-148
+## 13  18-JAN-2018                     Convair CV-580F       XA-TRB
+## 14  20-JAN-2018          Embraer EMB-120ER Brasilia       5Y-CEI
+## 15  20-JAN-2018                        Let L-410UVP       UR-VTV
+## 16  25-JAN-2018                     Gulfstream G200       5N-BTF
+## 17  25-JAN-2018                         Airbus A320             
+## 18  29-JAN-2018                     Shaanxi Y-8GX-3        30513
+## 19  11-FEB-2018                 Antonov An-148-100B     RA-61704
+## 20  16-FEB-2018                          Fokker 100       EP-FQF
+## 21  18-FEB-2018                          ATR 72-212       EP-ATS
+## 22  20-FEB-2018                               MD-83       5N-SRI
+## 23  21-FEB-2018           Cessna 208B Grand Caravan       G-BZAH
+## 24  23-FEB-2018                 Beech B100 King Air       C-GIAE
+## 25  26-FEB-2018                 Beech A100 King Air       C-GJXF
+## 26  28-FEB-2018                     Airbus A320-214       ES-SAN
+## 27  01-MAR-2018            Beech 200 Super King Air       YV1909
+## 28  04-MAR-2018                 Boeing 737-322 (SF)       9S-ASG
+## 29  06-MAR-2018                       Antonov An-26  RF-92955/52
+## 30  11-MAR-2018             Canadair Challenger 604       TC-TRB
+## 31  12-MAR-2018                   DHC-8-402Q Dash 8       S2-AGU
+## 32  15-MAR-2018           Beech B200 Super King Air     YV3284 ?
+## 33  15-MAR-2018                Cessna 208 Caravan I       VH-PGA
+## 34  16-MAR-2018                           Beech C99       N213AV
+## 35  17-MAR-2018                  Canadair CRJ-200ER       C-FDJA
+## 36  20-MAR-2018                DHC-6 Twin Otter 300       N716JP
+## 37  25-MAR-2018                          ATR 42-500       F-GPYF
+## 38  26-MAR-2018                  CASA C-212 Aviocar       N217BH
+## 39  26-MAR-2018              CASA C-212 Aviocar 200       N107BH
+## 40  27-MAR-2018                     Airbus A319-111       G-EZMK
+## 41  28-MAR-2018                 Boeing 737-76J (WL)       D-ABLB
+## 42  28-MAR-2018                    Boeing 767-3Q8ER       4X-EAK
+## 43  29-MAR-2018        Swearingen SA227-DC Metro 23      CP-2459
+## 44  29-MAR-2018            ATR 72-212A (ATR 72-600)       XA-UYY
+## 45  29-MAR-2018                          ATR 42-500       XA-UAV
+## 46  29-MAR-2018                            Beech 99        N31TN
+## 47  30-MAR-2018             Cessna 650 Citation III       N126MT
+## 48  30-MAR-2018                     Antonov An-12BK       UR-KDM
+## 49  31-MAR-2018           Cessna 208B Grand Caravan       N9339B
+## 50  02-APR-2018            Cessna 525C Citation CJ4       N511AC
+## 51  04-APR-2018                        Learjet 45XR       N618CW
+## 52  04-APR-2018                        Learjet 40XR       N626FX
+## 53  04-APR-2018         Cessna 560XL Citation Excel       N900WL
+## 54  04-APR-2018                          Learjet 60       N759SH
+## 55  05-APR-2018                       Antonov An-26     UP-AN607
+## 56  09-APR-2018                      Boeing 737-9B5       HL7725
+## 57  09-APR-2018            Beech 200 Super King Air       LN-NOA
+## 58  11-APR-2018                    Ilyushin Il-76TD       7T-WIV
+## 59  11-APR-2018           Cessna 208B Grand Caravan       N814GV
+## 60  12-APR-2018           Cessna 208B Grand Caravan       5Y-SAV
+## 61  13-APR-2018                 Lockheed P-3C Orion             
+## 62  14-APR-2018                   Antonov An-74-200     EK-74036
+## 63  15-APR-2018                     Airbus A321-213       B-6555
+## 64  15-APR-2018              Cessna 525 CitationJet        N525P
+## 65  15-APR-2018           Cessna 550 Citation Bravo         N4AT
+## 66  15-APR-2018           Bombardier Challenger 605       C-FXWT
+## 67  15-APR-2018                DHC-6 Twin Otter 100       C-FSCA
+## 68  15-APR-2018                           Saab 340B       C-GTWK
+## 69  16-APR-2018          Cessna 525 CitationJet CJ1       D-ISWA
+## 70  17-APR-2018                 Boeing 737-7H4 (WL)       N772SW
+## 71  17-APR-2018                   DHC-8-402Q Dash 8       G-JECX
+## 72  18-APR-2018                     Airbus A330-302       N806NW
+## 73  20-APR-2018                               MD-83       N807WA
+## 74  29-APR-2018                 Boeing 737-8GP (WL)       PK-LOO
+## 75  29-APR-2018          Lockheed L-100-30 Hercules          111
+## 76  29-APR-2018                         Beech 1900C       N172GA
+## 77  30-APR-2018                 Boeing 737-8AS (WL)       EI-GDZ
+## 78  01-MAY-2018  Bombardier CRJ-900LR (CL-600-2D24)       N606LR
+## 79  01-MAY-2018               Boeing 767-332ER (WL)       N172DN
+## 80  02-MAY-2018           Lockheed WC-130H Hercules      65-0968
+## 81  02-MAY-2018                           Beech C99      PNC0203
+## 82  03-MAY-2018               Dassault Falcon 900EX       ZS-DEX
+## 83  04-MAY-2018            Cessna 525C Citation CJ4       EC-MOQ
+## 84  05-MAY-2018                      Embraer KC-390       PT-ZNF
+## 85  07-MAY-2018                 Boeing 737-8H4 (WL)       N8655D
+## 86  12-MAY-2018          Lockheed L-100-30 Hercules       N403LC
+## 87  12-MAY-2018                 Boeing 737-8BK (WL)       P2-PXE
+## 88  13-MAY-2018                     Airbus A321-231       TC-JMM
+## 89  13-MAY-2018                     Airbus A330-323       HL7792
+## 90  13-MAY-2018           Cessna 208B Grand Caravan       G-KNYS
+## 91  15-MAY-2018           Cessna 208B Grand Caravan             
+## 92  16-MAY-2018           Cessna 208B Grand Caravan       9N-AJU
+## 93  18-MAY-2018                      Boeing 737-201       XA-UHZ
+## 94  20-MAY-2018              Gulfstream G200 Galaxy       B-8129
+## 95  21-MAY-2018                     Airbus A330-243       TC-OCH
+## 96  22-MAY-2018           Cessna 208B Grand Caravan       PT-FLW
+## 97  22-MAY-2018              Gulfstream G200 Galaxy       N813WM
+## 98  23-MAY-2018            Beech 200 Super King Air       N905GP
+## 99  23-MAY-2018            Beech 200 Super King Air       N800HA
+## 100 24-MAY-2018       Swearingen SA227-AC Metro III       XA-UPP
+## 101 30-MAY-2018           Cessna 208B Grand Caravan       5X-MRH
+## 102 30-MAY-2018           Cessna 208B Grand Caravan       5Y-ETY
+## 103 03-JUN-2018            Lockheed C-130H Hercules       7T-WHT
+## 104 05-JUN-2018           Cessna 208B Grand Caravan       5Y-CAC
+## 105 06-JUN-2018        Cessna 525A CitationJet CJ2+       D-IULI
+## 106 06-JUN-2018                       Antonov An-2R       YR-DAX
+## 107 09-JUN-2018                DHC-6 Twin Otter 300       9N-AEV
+## 108 11-JUN-2018                     Airbus A340-313       D-AIFA
+## 109 11-JUN-2018                   BN-2B-26 Islander       VP-FBM
+## 110 14-JUN-2018                   DHC-8-202Q Dash 8       P2-ANX
+## 111 14-JUN-2018                               MD-83       UR-CPR
+## 112 18-JUN-2018           Cessna 208B Grand Caravan       PK-FSL
+## 113 21-JUN-2018  Embraer ERJ 170LR (ERJ-170-100 LR)       N876RW
+## 114 22-JUN-2018                DHC-6 Twin Otter 300       PK-HVU
+## 115 24-JUN-2018                        Let L-410UVP       3X-AAJ
+## 116 25-JUN-2018                DHC-6 Twin Otter 300       PK-YRU
+## 117 26-JUN-2018                    Boeing 777-2B5ER       HL7764
+## 118 26-JUN-2018                     Airbus A330-323       HL8286
+## 119 26-JUN-2018                          Learjet 60          N57
+## 120 26-JUN-2018                      Ilyushin Il-76             
+## 121 27-JUN-2018                       Antonov An-2R     RA-62524
+## 122 30-JUN-2018                   BN-2A-26 Islander       V3-HFB
+## 123 04-JUL-2018           Cessna 208B Grand Caravan       N208EE
+## 124 05-JUL-2018           Cessna 208B Grand Caravan       5Y-BUC
+## 125 05-JUL-2018                     Dornier 228-202       VH-VJN
+## 126 06-JUL-2018            ATR 72-212A (ATR 72-600)       CS-DJG
+## 127 09-JUL-2018          DHC-3T Texas Turbine Otter       C-GBQC
+## 128 09-JUL-2018                ATR 72-600 (72-212A)       CN-COH
+## 129 10-JUL-2018                      Convair CV-340       ZS-BRV
+## 130 10-JUL-2018          DHC-3T Vazar Turbine Otter       N3952B
+## 131 11-JUL-2018                       Douglas DC-3C      HK-3293
+## 132 16-JUL-2018                       Curtiss C-46F       N1822M
+## 133 16-JUL-2018                 Boeing 737-8F2 (WL)       LV-HQY
+## 134 20-JUL-2018                      Antonov An-26B     UP-AN611
+## 135 21-JUL-2018                Douglas C-47B (DC-3)        N47HL
+## 136 22-JUL-2018               Cessna 750 Citation X       N752TX
+## 137 23-JUL-2018          Cessna 560 Citation Encore       N866VP
+## 138 27-JUL-2018                       Antonov An-2R       9S-GFS
+## 139 27-JUL-2018                    Boeing 767-38EER       N641GT
+## 140 28-JUL-2018            ATR 72-212A (ATR 72-500)      YJ-AV71
+## 141 28-JUL-2018                    BN-2A-8 Islander       YJ-OO9
+## 142 28-JUL-2018                   BN-2A-27 Islander       YJ-AL2
+## 143 30-JUL-2018                       Antonov An-2R     RA-40649
+## 144 31-JUL-2018                   Embraer ERJ 190AR       XA-GAL
+## 145 01-AUG-2018             Beech B300 King Air 350       N557AP
+## 146 04-AUG-2018                 Junkers Ju-52/3mg4e       HB-HOT
+## 147 07-AUG-2018           Cessna 208B Grand Caravan       VT-UDN
+## 148 07-AUG-2018                 Dassault Falcon 20D       N961AA
+## 149 09-AUG-2018                        Boeing 787-8       CN-RGT
+## 150 09-AUG-2018                    Boeing 777-3F2ER       TC-JJZ
+## 151 10-AUG-2018                   DHC-8-402Q Dash 8       N449QX
+## 152 13-AUG-2018              Cessna 525 CitationJet       N526CP
+## 153 13-AUG-2018                    Airbus A321-271N       N204HA
+## 154 15-AUG-2018                    Boeing 777-367ER        B-KPY
+## 155 16-AUG-2018                 Boeing 737-85C (WL)       B-5498
+## 156 19-AUG-2018                       Antonov An-2T       D-FOJB
+## 157 19-AUG-2018                   DHC-8-402Q Dash 8       N404AV
+## 158 22-AUG-2018            ATR 72-212A (ATR 72-600)      B-16852
+## 159 25-AUG-2018            Grumman HU-16C Albatross       N1955G
+## 160 26-AUG-2018           Cessna 208B Grand Caravan       5Y-BOP
+## 161 26-AUG-2018               Boeing 767-333ER (WL)       C-FMWV
+## 162 26-AUG-2018                         Harbin Y12E      HK-5036
+## 163 28-AUG-2018                     Airbus A320-214       B-6952
+## 164 28-AUG-2018                       Antonov An-2R      LZ-1409
+## 165 30-AUG-2018                DHC-6 Twin Otter 300   ET-AIU/808
+## 166 01-SEP-2018                 Boeing 737-8AS (WL)       VQ-BJI
+## 167 03-SEP-2018           Beech B200 Super King Air        N97WC
+## 168 06-SEP-2018                 Beech A100 King Air       PT-LJN
+## 169 09-SEP-2018                        Let L-410UVP       UR-TWO
+## 170 15-SEP-2018                     Canadair CL-415       C-FOFI
+## 171 16-SEP-2018                   Boeing 747-428FER       TC-ACM
+## 172 17-SEP-2018                     Ilyushin Il-20M     RF-93610
+## 173 18-SEP-2018                        BAe-125-700A       N109BG
+## 174 18-SEP-2018                       Antonov An-2R       YU-BRK
+## 175 20-SEP-2018          Embraer EMB-120ER Brasilia       N223SW
+## 176 24-SEP-2018                     Airbus A340-313     RP-C3435
+## 177 24-SEP-2018               Honda HA-420 HondaJet       PR-TLZ
+## 178 25-SEP-2018            Beech 200 Super King Air       N241CK
+## 179 26-SEP-2018                 Boeing 737-8Q8 (WL)       S2-AJA
+## 180 27-SEP-2018                  Dassault Falcon 50       N114TD
+## 181 27-SEP-2018            Cessna 208B Supervan 900       VH-FAY
+## 182 28-SEP-2018                 Boeing 737-8BK (WL)       P2-PXE
+## 183 28-SEP-2018                     Airbus A320-232       PT-MZJ
+## 184 01-OCT-2018                       Antonov An-2T       YV1719
+## 185 03-OCT-2018                       Antonov An-32             
+## 186 03-OCT-2018                       Antonov An-26       7706 ?
+## 187 03-OCT-2018                         Beech 1900C        N575Q
+## 188 10-OCT-2018             Sukhoi Superjet 100-95B     RA-89011
+## 189 10-OCT-2018        Cessna 208B Grand Caravan EX       PK-JBR
+## 190 12-OCT-2018                 Boeing 737-8HG (WL)       VT-AYD
+## 191 12-OCT-2018                          ATR 72-202       5N-BPE
+## 192 29-OCT-2018                    Boeing 737 MAX 8       PK-LQP
+## 193 31-OCT-2018                     Airbus A330-203       F-GZCI
+## 194 31-OCT-2018                     Airbus A330-323       N817NW
+## 195 07-NOV-2018                     Boeing 747-412F       N908AR
+## 196 08-NOV-2018                       Antonov An-2R     RA-84674
+## 197 09-NOV-2018                      Boeing 757-23N       N524AT
+## 198 09-NOV-2018            Lockheed C-130E Hercules         4180
+## 199 11-NOV-2018  Embraer ERJ-190LR (ERJ-190-100 LR)       P4-KCJ
+## 200 15-NOV-2018                   DHC-8-315Q Dash 8       C-FPAE
+## 201 16-NOV-2018               BAe 3212 Jetstream 32      HK-4394
+## 202 21-NOV-2018       Swearingen SA227-AC Metro III       C-FYAG
+## 203 22-NOV-2018                      Boeing 737-53C    OB-2041-P
+## 204 23-NOV-2018                        BAe-125-700A        N422X
+## 205 24-NOV-2018            ATR 72-212A (ATR 72-500)       AP-BKW
+## 206 26-NOV-2018              Cessna 525 Citation M2       PP-OEG
+## 207 30-NOV-2018        Cessna 525A CitationJet CJ2+       N525EG
+## 208 30-NOV-2018              Cessna 550 Citation II       N941JM
+## 209 04-DEC-2018                     Airbus A320-214       SX-EMY
+## 210 06-DEC-2018             Lockheed Martin KC-130J       167981
+## 211 08-DEC-2018                   BN-2A-20 Islander       VH-OBL
+## 212 08-DEC-2018            Beech 200 Super King Air             
+## 213 08-DEC-2018            Beech 200 Super King Air       VH-ODI
+## 214 10-DEC-2018                Airbus A300B4-203(F)       XA-MRC
+## 215 11-DEC-2018                    Boeing 777-333ER       C-FITW
+## 216 15-DEC-2018                         Learjet 35A        N55FN
+## 217 18-DEC-2018                     Dornier 228-201       S9-AUN
+## 218 18-DEC-2018                        Boeing 787-9       ET-AUP
+## 219 20-DEC-2018               Cessna 560 Citation V       N188CW
+## 220 20-DEC-2018                      Antonov An-26B       9S-AGB
+## 221 22-DEC-2018             PZL-Mielec M28 Skytruck    GNB-96107
+## 222 24-DEC-2018                      Antonov An-26B       9T-TAB
+## 223 31-DEC-2018                 Boeing 757-2B7 (WL)       N938UW
+## 224 07-JAN-2019                           Saab 340B       YL-RAF
+## 225 12-JAN-2019             Canadair Challenger 601       N813WT
+## 226 14-JAN-2019                     Boeing 707-3J9C       EP-CPP
+## 227 16-JAN-2019           Cessna 208B Grand Caravan       8R-YAC
+## 228 21-JAN-2019                       AMI DC-3-65TP       N467KS
+## 229 21-JAN-2019                 Boeing 737-330 (QC)       9S-AHJ
+## 230 22-JAN-2019                 Boeing 737-8LJ (WL)       VP-BRR
+## 231 23-JAN-2019                    DHC-8-102 Dash 8       C-GTCO
+## 232 26-JAN-2019                     Airbus A321-231       TC-OEB
+## 233 28-JAN-2019            ATR 72-212A (ATR 72-500)       EC-LYJ
+## 234 28-JAN-2019                Boeing 727-2B6F Adv.       N720CK
+## 235 29-JAN-2019                 Beech B200 King Air        N13LY
+## 236 30-JAN-2019            Beech 200 Super King Air       C-GTUC
+## 237 04-FEB-2019                      Boeing 737-332       ST-TAL
+## 238 08-FEB-2019            Convair C-131B Samaritan       N145GT
+## 239 08-FEB-2019                    Airbus A321-251N       SE-RKA
+## 240 09-FEB-2019 Embraer ERJ 190AR (ERJ-190-100 IGW)       5Y-KYR
+## 241 09-FEB-2019 Embraer ERJ 190AR (ERJ-190-100 IGW)       5Y-FFF
+## 242 09-FEB-2019                Cessna 208 Caravan I       PR-RTA
+## 243 11-FEB-2019              Raytheon Beechjet 400A       N750TA
+## 244 13-FEB-2019                     Boeing 747-406M       PH-BFV
+## 245 13-FEB-2019                        Boeing 787-9       PH-BHA
+## 246 23-FEB-2019         Boeing 767-375ER (BCF) (WL)       N1217A
+## 247 24-FEB-2019                 Boeing 737-8E9 (WL)       S2-AHV
+## 248 25-FEB-2019                   EO-5C (DHC-7-102)       N89068
+## 249 26-FEB-2019              Gulfstream G200 Galaxy      4K-AZ88
+## 250 01-MAR-2019                     Airbus A320-214       OE-LOA
+## 251 03-MAR-2019                         Beech 1900D       7T-VIO
+## 252 03-MAR-2019               Honda HA-420 HondaJet       N105HJ
+## 253 03-MAR-2019                Airbus A320-214 (WL)       PR-OCW
+## 254 04-MAR-2019                   Embraer EMB-145XR       N14171
+## 255 04-MAR-2019           Cessna 208B Grand Caravan       C-FAFV
+## 256 07-MAR-2019                         Learjet 35A       LV-BNR
+## 257 09-MAR-2019                        Douglas DC-3      HK-2494
+## 258 09-MAR-2019                     Gulfstream G-IV       N505GF
+## 259 10-MAR-2019                    Boeing 737 MAX 8       ET-AVJ
+## 260 10-MAR-2019         Hawker Siddeley HS-125-600A    fake reg.
+## 261 10-MAR-2019                Bombardier CRJ-702ER       N530EA
+## 262 10-MAR-2019                Bombardier CRJ-900LR       N569NN
+## 263 11-MAR-2019           CC-138 Twin Otter (DHC-6)        13803
+## 264 12-MAR-2019                 Beech A100 King Air       N945WS
+## 265 14-MAR-2019             Cessna 650 Citation III       N220CM
+## 266 18-MAR-2019           Bombardier Challenger 300       9M-TST
+## 267 18-MAR-2019                   IAI 1124 Westwind         N4MH
+## 268 19-MAR-2019                          Fokker 100       EP-IDG
+## 269 22-MAR-2019              Rockwell Sabreliner 60       N990PA
+## 270 23-MAR-2019           Beech B200 Super King Air       A2-MBM
+## 271 23-MAR-2019                     Airbus A320-232       HA-LPL
+## 272 27-MAR-2019                        Antonov An-2     CU-A1825
+## 273 27-MAR-2019                 Boeing 737-7H4 (WL)       N249WN
+## 274 03-APR-2019                     Airbus A320-214       G-EZWC
+## 275 04-APR-2019                   DHC-8-402Q Dash 8       OE-LGM
+## 276 04-APR-2019                               MD-88       N977DL
+## 277 08-APR-2019               BAe 4100 Jetstream 41       HI1038
+## 278 10-APR-2019                Airbus A321-231 (WL)       N114NN
+## 279 13-APR-2019              Rockwell Sabreliner 65       N265DS
+## 280 14-APR-2019                    Let L-410UVP-E20       9N-AMH
+## 281 16-APR-2019                   BN-2B-27 Islander       CC-CYR
+## 282 16-APR-2019              Bombardier Global 5000        14+01
+## 283 22-APR-2019                       Antonov An-26       EY-322
+## 284 23-APR-2019                Cessna 208 Caravan I       N366TA
+## 285 24-APR-2019           Cessna 551 Citation II/SP       D-IADV
+## 286 24-APR-2019           Beech B200 Super King Air       C-FRMV
+## 287 30-APR-2019                 Boeing 737-73S (WL)       EI-SEV
+## 288 30-APR-2019                 Boeing 737-33A (WL)       G-GDFB
+## 289 03-MAY-2019                 Boeing 737-81Q (WL)       N732MA
+## 290 03-MAY-2019                Douglas C-47A (DC-3)       C-GJKM
+## 291 04-MAY-2019                          Learjet 45       C-GMCP
+## 292 04-MAY-2019                       Antonov An-2R     RA-01443
+## 293 05-MAY-2019             Sukhoi Superjet 100-95B     RA-89098
+## 294 05-MAY-2019          Canadair Challenger 601-3A       N601VH
+## 295 07-MAY-2019                DHC-6 Twin Otter 300       C-GNDO
+## 296 08-MAY-2019                   DHC-8-402Q Dash 8       S2-AGQ
+## 297 08-MAY-2019                       Antonov An-2R       YV2354
+## 298 10-MAY-2019                    DHC-8-311 Dash 8       C-FJXZ
+## 299 11-MAY-2019           Cessna 208B Grand Caravan       C-FCPM
+## 300 13-MAY-2019          DHC-3T Vazar Turbine Otter       N959PA
+## 301 18-MAY-2019 Gulfstream American G-1159 Gulfstre       unreg.
+## 302 22-MAY-2019                       Antonov An-2R     RA-68161
+## 303 22-MAY-2019           Cessna S550 Citation S/II        N311G
+## 304 24-MAY-2019          Cessna 560 Citation Encore        N832R
+## 305 29-MAY-2019                  Antonov An-124-100       5A-DKN
+## 306 03-JUN-2019                       Antonov An-32        K2752
+## 307 07-JUN-2019                       Antonov An-2T       UR-KAU
+## 308 09-JUN-2019                       Antonov An-2R     RA-81519
+## 309 09-JUN-2019               Boeing 737-924ER (WL)       N75436
+## 310 11-JUN-2019              CASA C-212 Aviocar 200       N603AR
+## 311 13-JUN-2019           Beech B200 Super King Air             
+## 312 15-JUN-2019                 Boeing 757-224 (WL)       N26123
+## 313 17-JUN-2019       Cessna 680 Citation Sovereign       LV-CIQ
+## 314 17-JUN-2019                 Boeing 737-8H4 (WL)       N8608N
+## 315 20-JUN-2019                       Antonov An-2R     UP-A0116
+## 316 21-JUN-2019             Basler Turbo 67 (DC-3T)       C-FKGL
+## 317 23-JUN-2019                       Antonov An-2R     UR-43983
+## 318 24-JUN-2019          Hawker Siddeley HS-125-400             
+## 319 26-JUN-2019              Rockwell Sabreliner 65        N65HH
+## 320 27-JUN-2019                     Antonov An-24RV     RA-47366
+## 321 27-JUN-2019               BAe 3212 Jetstream 31       YV2536
+## 322 28-JUN-2019                           Saab 340A       C6-VIP
+## 323 29-JUN-2019           Cessna 208B Grand Caravan        N80JF
+## 324 30-JUN-2019            Beech B300 King Air 350i       N534FF
+## 325 30-JUN-2019                       Antonov An-2T     RF-00105
+## 326 30-JUN-2019                Dassault Falcon 900B       N908CA
+## 327 01-JUL-2019                      Boeing 737-85R       VT-SYK
+## 328 08-JUL-2019                     Airbus A320-214       5A-ONA
+## 329 08-JUL-2019           Cessna 208B Grand Caravan       N9448B
+## 330 08-JUL-2019                     Canadair CL-415       C-FAWQ
+## 331 09-JUL-2019                Airbus A320-214 (WL)       OE-IVQ
+## 332 09-JUL-2019                 Boeing 737-8K2 (WL)       PH-BXH
+## 333 09-JUL-2019                        Antonov An-2       unreg.
+## 334 12-JUL-2019              Cessna 525 CitationJet       N262BK
+## 335 13-JUL-2019           Beech B200 Super King Air             
+## 336 16-JUL-2019                        Antonov An-2     RA-3098K
+## 337 17-JUL-2019              Cessna 550 Citation II       N320JT
+## 338 19-JUL-2019                   DHC-8-402Q Dash 8       C-FKWE
+## 339 20-JUL-2019                          ATR 42-500       AP-BHP
+## 340 23-JUL-2019                 Boeing 737-36N (WL)       5N-BQO
+## 341 25-JUL-2019                    Ilyushin Il-76TD       UR-CRP
+## 342 25-JUL-2019                    Ilyushin Il-76TD       UR-CMC
+## 343 26-JUL-2019              Cessna 208 Caravan 675       C-GURL
+## 344 27-JUL-2019       Swearingen SA227-AC Metro III       N681TR
+## 345 30-JUL-2019            Beech B300 King Air 350i          766
+## 346 30-JUL-2019                      Antonov An-72P          032
+## 347 30-JUL-2019                     Airbus A319-114       D-AILR
+## 348 30-JUL-2019                           Avro RJ85       VH-NJW
+## 349 31-JUL-2019                Bombardier CRJ-900ER       N947LR
+## 350 01-AUG-2019   Douglas C-118A Liftmaster (DC-6A)       N451CE
+## 351 02-AUG-2019                     Airbus A340-313       HB-JMF
+## 352 02-AUG-2019                        Boeing 787-8       C-GHPU
+## 353 02-AUG-2019                Shijiazhuang Y-5B(D)       B-50OC
+## 354 04-AUG-2019                        Antonov An-2    RT-15-305
+## 355 06-AUG-2019        Cessna 560XLS+ Citation XLS+       D-CAWM
+## 356 06-AUG-2019                    Ilyushin Il-76TD       UR-COZ
+## 357 06-AUG-2019           Cessna 208B Grand Caravan       5H-NOW
+## 358 06-AUG-2019            Cessna 208B Supervan 900       C-FSKF
+## 359 06-AUG-2019         Cessna 510 Citation Mustang       CC-ANR
+## 360 06-AUG-2019               Boeing 737-924ER (WL)       N37437
+## 361 06-AUG-2019                     Airbus A320-232       N432UA
+## 362 07-AUG-2019                      HS-125/BAe-125             
+## 363 07-AUG-2019               BAe 3201 Jetstream 32      HK-4540
+## 364 08-AUG-2019                Airbus A321-211 (WL)       N717FR
+## 365 10-AUG-2019             Canadair Challenger 601       N602TS
+## 366 12-AUG-2019                        Boeing 787-9       G-CKWB
+## 367 14-AUG-2019                Beech Super King Air       XB-...
+## 368 14-AUG-2019                DHC-6 Twin Otter 200         T-82
+## 369 15-AUG-2019                     Airbus A321-211       VQ-BOZ
+## 370 15-AUG-2019       Cessna 680A Citation Latitude         N8JR
+## 371 15-AUG-2019                DHC-6 Twin Otter 300       N322AV
+## 372 16-AUG-2019                           DHC-8-200       5Y-SLM
+## 373 18-AUG-2019                 Boeing 757-251 (WL)       N543US
+## 374 18-AUG-2019        Cessna 208B Grand Caravan EX       N879MA
+## 375 21-AUG-2019         Cessna 560XL Citation Excel        N91GY
+## 376 21-AUG-2019             Cessna 208B Cargomaster       C-FEXE
+## 377 22-AUG-2019                     Airbus A380-861       A6-EOP
+## 378 23-AUG-2019                       Antonov An-2T       OK-TIR
+## 379 25-AUG-2019            Lockheed C-130A Hercules       N119TG
+## 380 27-AUG-2019         Cessna 560XL Citation Excel       VT-AVV
+## 381 27-AUG-2019                     Airbus A330-343       B-5958
+## 382 28-AUG-2019                       Antonov An-2R     RA-40389
+## 383 28-AUG-2019         Cessna 525 CitationJet CJ1+       D-ICEY
+## 384 30-AUG-2019                       Antonov An-2R     RA-33061
+## 385 31-AUG-2019         Cessna 510 Citation Mustang       N551WH
+## 386 01-SEP-2019             Beech B300 King Air 350     RP-C2296
+## 387 01-SEP-2019                     Airbus A330-202       5A-LAU
+## 388 02-SEP-2019                        BAe-125-700A       XB-PTW
+## 389 05-SEP-2019        Cessna 560XLS+ Citation XLS+       OE-GES
+## 390 07-SEP-2019            ATR 72-212A (ATR 72-600)      HK-5041
+## 391 11-SEP-2019                      Convair CV-440        N24DR
+## 392 11-SEP-2019                Cessna 208 Caravan I       D-FIDI
+## 393 11-SEP-2019                        BAe-125-700A       XB-SMV
+## 394 16-SEP-2019           Cessna 208B Grand Caravan       PT-MHC
+## 395 18-SEP-2019     Viking Air DHC-6-400 Twin Otter       PK-CDC
+## 396 20-SEP-2019           Cessna 208B Grand Caravan       N895SF
+## 397 23-SEP-2019        Cessna 208B Grand Caravan EX       5H-AAM
+## 398 23-SEP-2019                   BN-2A-27 Islander       VP-MNI
+## 399 24-SEP-2019                  Cessna 208 Caravan         1917
+## 400 24-SEP-2019           Cessna 208B Grand Caravan       YVO134
+## 401 30-SEP-2019 Gulfstream American G-1159 Gulfstre       XB-PVO
+## 402 30-SEP-2019                     Antonov An-12BK       UR-CKL
+## 403 02-OCT-2019        Boeing B-17G Flying Fortress       N93012
+## 404 04-OCT-2019                     Antonov An-12BK       UR-CAH
+## 405 07-OCT-2019               Honda HA-420 HondaJet       N166HJ
+## 406 07-OCT-2019                        Hawker 800XP        N86MN
+## 407 10-OCT-2019                       Antonov An-72     EK-72903
+## 408 11-OCT-2019                           Fokker 50       5Y-IZO
+## 409 11-OCT-2019                DHC-6 Twin Otter 100       N166DH
+## 410 17-OCT-2019                           Saab 2000       N686PA
+## 411 18-OCT-2019                       Douglas DC-3C       N437GB
+## 412 18-OCT-2019    Airbus CC-150 Polaris (A310-300)        15001
+## 413 22-OCT-2019             Basler Turbo 67 (DC-3T)       FAS116
+## 414 22-OCT-2019                  Canadair CRJ-200LR       N8837B
+## 415 25-OCT-2019            Beech 200 Super King Air             
+## 416 25-OCT-2019              Rockwell Sabreliner 65       N465BC
+## 417 26-OCT-2019           DHC-3T/M601 Turbine Otter       C-GBTU
+## 418 27-OCT-2019                        Let L-410UVP       YI-BYO
+## 419 27-OCT-2019 Gulfstream American G-1159 Gulfstre     (N530GA)
+## 420 05-NOV-2019                         Learjet 35A       XA-VBD
+## 421 11-NOV-2019       Embraer EMB-145LR (ERJ-145LR)       N619AE
+## 422 11-NOV-2019                        BAe-125-700A     (N237DX)
+## 423 11-NOV-2019                      DHC-8-315Q MPA       VH-ZZE
+## 424 14-NOV-2019              Cessna 550 Citation II       PT-LTJ
+## 425 15-NOV-2019         Cessna 525B CitationJet CJ3       N973CG
+## 426 15-NOV-2019          Cessna 560 Citation Encore       N777HW
+## 427 16-NOV-2019                    Boeing 777-3B5ER       HL7204
+## 428 16-NOV-2019                     Airbus A330-243       V5-ANO
+## 429 21-NOV-2019                     Gulfstream G150       TC-AEH
+## 430 21-NOV-2019                 Boeing 737-8F2 (WL)       TC-JGZ
+## 431 22-NOV-2019                      Boeing 737-401       YV3012
+## 432 23-NOV-2019                 Beech B200 King Air     (XB-PYB)
+## 433 24-NOV-2019                     Dornier 228-201       9S-GNH
+## 434 26-NOV-2019            Cessna 208 Grand Caravan             
+## 435 01-DEC-2019                           Beech B99       C6-FER
+## 436 01-DEC-2019                        BAe-125-700A       N949CL
+## 437 02-DEC-2019                        BAe-125-700A   false reg.
+## 438 03-DEC-2019             Basler Turbo 67 (DC-3T)       C-FKAL
+## 439 03-DEC-2019                        BAe-125-800A       N469RJ
+## 440 04-DEC-2019            Beech 200 Super King Air             
+## 441 06-DEC-2019                        BAe-125-800A     (N293WB)
+## 442 09-DEC-2019       Cessna 208B Super Cargomaster       N4602B
+## 443 09-DEC-2019            Lockheed C-130H Hercules          990
+## 444 10-DEC-2019                   DHC-8-402Q Dash 8     ET-AQC ?
+## 445 15-DEC-2019  Grumman American G-1159 Gulfstream     (XB-BZH)
+## 446 16-DEC-2019            Beech 200 Super King Air             
+## 447 17-DEC-2019             Beech B300 King Air 350       N160RW
+## 448 18-DEC-2019            Beech 200 Super King Air             
+## 449 18-DEC-2019         Cessna 525A CitationJet CJ2       C-GOJG
+## 450 18-DEC-2019            Beech 200 Super King Air        N72MM
+## 451 19-DEC-2019                 Beech A100 King Air       YV1104
+## 452 22-DEC-2019                 Boeing 737-824 (WL)       N87513
+## 453 24-DEC-2019           Cessna 208B Grand Caravan       XA-TWN
+## 454 27-DEC-2019                          Fokker 100     UP-F1007
+## 455 27-DEC-2019              Cirrus SF50 Vision Jet        N52CV
+## 456 28-DEC-2019                      Let L-410UVP-E       9S-GDX
+## 457 29-DEC-2019           Cessna 560XL Citation XLS       LV-FQD
+## 458 02-JAN-2020                      Antonov An-12A            -
+## 459 03-JAN-2020             Harbin Yunshuji Y-12 II      SCL-857
+## 460 03-JAN-2020                        Hawker 900XP        N805D
+## 461 04-JAN-2020                 Beech B200 King Air       N200HF
+## 462 05-JAN-2020             Beech B300 King Air 350             
+## 463 08-JAN-2020                 Boeing 737-8KV (WL)       UR-PSR
+## 464 08-JAN-2020                 Boeing 737-823 (WL)       N929NN
+## 465 09-JAN-2020           Lockheed C-130BZ Hercules          403
+## 466 10-JAN-2020                Airbus A321-231 (WL)       VQ-BRS
+## 467 16-JAN-2020                 Beech B200 King Air       N547LM
+## 468 19-JAN-2020       Swearingen SA227-AC Metro III       C-GWVH
+## 469 20-JAN-2020                           DHC-8-314       C-GXAI
+## 470 23-JAN-2020           Lockheed EC-130Q Hercules       N134CG
+## 471 23-JAN-2020           Cessna S550 Citation S/II       ZS-CAR
+## 472 24-JAN-2020                     Gulfstream G150       N373ML
+## 473 27-JAN-2020                               MD-83       EP-CPZ
+## 474 27-JAN-2020   Bombardier E-11A (Global Express)      11-9358
+## 475 31-JAN-2020        Bombardier DHC-8-402Q Dash 8       C-FKWE
+## 476 01-FEB-2020               Boeing 747-412F (SCD)       TC-MCT
+## 477 03-FEB-2020                    Boeing 767-375ER       C-GHOZ
+## 478 03-FEB-2020                   Boeing 747-412BCF       N703CK
+## 479 04-FEB-2020           Cessna 208B Grand Caravan       N454SF
+## 480 05-FEB-2020                 Boeing 737-86J (WL)       TC-IZK
+## 481 06-FEB-2020           Cessna 208B Grand Caravan        N24MG
+## 482 07-FEB-2020                 Boeing 757-256 (WL)       TF-FIA
+## 483 07-FEB-2020       Cessna 208B Super Cargomaster       N988FX
+## 484 08-FEB-2020            Cessna 501 Citation I/SP       N501RG
+## 485 08-FEB-2020            Beech 200 Super King Air       CC-COT
+## 486 09-FEB-2020                 Boeing 737-524 (WL)       VQ-BPS
+## 487 12-FEB-2020          Cessna 560 Citation Encore       N654CE
+## 488 14-FEB-2020                Cessna 208 Caravan I       P2-MAI
+## 489 20-FEB-2020                       Antonov An-2T     RA-40642
+## 490 20-FEB-2020                 Beech B200 King Air        N860J
+## 491 20-FEB-2020         Cessna 510 Citation Mustang       N163TC
+## 492 21-FEB-2020          DHC-3T Vazar Turbine Otter       C-FIUZ
+## 493 23-FEB-2020           Bombardier Challenger 605       C-GKCP
+## 494 24-FEB-2020        Swearingen SA227-DC Metro 23       C-GJVB
+## 495 24-FEB-2020                DHC-6 Twin Otter 300       8Q-MBC
+## 496 25-FEB-2020                          Learjet 55       N135LR
+## 497 25-FEB-2020               Boeing 737-301 (BDSF)       PK-YSG
+## 498 26-FEB-2020                       Antonov An-2P     UP-A0001
+## 499 27-FEB-2020                  Dassault Falcon 50       N951DJ
+## 500 28-FEB-2020                Airbus A300B4-203(F)     UP-A3003
+## 501 29-FEB-2020                         Learjet 35A       N721EC
+## 502 03-MAR-2020           Cessna S550 Citation S/II        N45NC
+## 503 03-MAR-2020                Dassault Falcon 2000       N519JD
+## 504 03-MAR-2020         Cessna 525C CitationJet CJ4       N989CJ
+## 505 03-MAR-2020           Bombardier Challenger 300       N819RS
+## 506 03-MAR-2020            Beech 200 Super King Air       N186EB
+## 507 03-MAR-2020            Beech 200 Super King Air         N2PY
+## 508 03-MAR-2020                          Learjet 55       N890AC
+## 509 05-MAR-2020       Cessna 208B Super Cargomaster       N706FX
+## 510 06-MAR-2020                DHC-6 Vistaliner 300        N72GC
+## 511 08-MAR-2020                    Boeing 767-3Q8ER       N477AX
+## 512 09-MAR-2020                   Gulfstream G-IVSP       M-YWAY
+## 513 09-MAR-2020                     Airbus A330-343       HS-TEU
+## 514 12-MAR-2020            Beech 200 Super King Air      HK-5075
+## 515 12-MAR-2020          DHC-3T Vazar Turbine Otter       C-GTMW
+## 516 13-MAR-2020              Cessna 525 CitationJet       YV3452
+## 517 14-MAR-2020               Raytheon Hawker 800XP       N100AG
+## 518 17-MAR-2020       Cessna 208B Super Cargomaster       N274PM
+## 519 19-MAR-2020                Cessna 208 Caravan I       P2-MAF
+## 520 22-MAR-2020        Hawker Siddeley HS-125-F400B     (XB-PNK)
+## 521 29-MAR-2020               IAI 1124A Westwind II     RP-C5880
+## 522 05-APR-2020                       Antonov An-26     UP-AN601
+## 523 19-APR-2020                        BAe-125-700A       N700NW
+## 524 20-APR-2020                        BAe-125-800A       N375TC
+## 525 23-APR-2020   Lockheed C-130J-30 Super Hercules      11-5736
+## 526 24-APR-2020                   IAI 1125 Astra SP       YV3427
+## 527 28-APR-2020                 Beech A100 King Air       C-FCBZ
+## 528 02-MAY-2020           Beech B200 Super King Air       C-GSAE
+## 529 04-MAY-2020          Embraer EMB-120RT Brasilia       5Y-AXO
+## 530 04-MAY-2020                         Learjet 25D       LV-WOC
+## 531 05-MAY-2020                         Learjet 35A       LV-BXU
+## 532 07-MAY-2020              Hawker Siddeley HS-125       XB-RBF
+## 533 08-MAY-2020                         Beech 1900C       N31704
+## 534 09-MAY-2020                        Learjet 60XR       5A-UAE
+## 535 09-MAY-2020                      Ilyushin Il-78      no reg.
+## 536 16-MAY-2020                         Let L-410MA     RA-67066
+## 537 19-MAY-2020                 Boeing 737-8Q8 (WL)       N820TJ
+## 538 20-MAY-2020            Cessna 501 Citation I/SP       N501KM
+## 539 21-MAY-2020 Embraer C-95BM Bandeirante (EMB-110      FAB2347
+## 540 22-MAY-2020                     Airbus A320-214       AP-BLD
+## 541 26-MAY-2020            Beech 200 Super King Air             
+## 542 28-MAY-2020                        BAe-125-700A       N720PT
+## 543 30-MAY-2020            Beech 200 Super King Air             
+## 544 30-MAY-2020                DHC-6 Twin Otter 100        N52FW
+## 545 08-JUN-2020           Lockheed C-130H3 Hercules      94-6706
+## 546 13-JUN-2020        Beech 300 Super King Air 350       N858UP
+## 547 14-JUN-2020                    Airbus A320-271N       VP-BWC
+## 548 14-JUN-2020                     Airbus A320-232       VP-BDL
+## 549 15-JUN-2020        Grumman G-1159 Gulfstream II        N27SL
+## 550 16-JUN-2020                   DHC-8-402Q Dash 8       G-JECK
+## 551 19-JUN-2020 Gulfstream American G-1159A Gulfstr       N516TR
+## 552 02-JUL-2020     Grumman G-1159 Gulfstream II SP       XB-NRX
+## 553 05-JUL-2020                        BAe-125-700A       XB-RCM
+## 554 07-JUL-2020                        Hawker 800XP       N339AV
+## 555 13-JUL-2020                       Antonov An-2R     RA-40851
+## 556 13-JUL-2020                   BN-2A-27 Islander       N200MU
+## 557 14-JUL-2020              DHC-8-402Q (PF) Dash 8       5Y-VVU
+## 558 15-JUL-2020            Beech B300 King Air 350i       EM-809
+## 559 17-JUL-2020            Beech 200 Super King Air       C-FSKQ
+## 560 19-JUL-2020                       Antonov An-2R     RA-71276
+## 561 20-JUL-2020           Beech B200 Super King Air        N740P
+## 562 22-JUL-2020                      Boeing 777-F60       ET-ARH
+## 563 22-JUL-2020                 Beech Beechjet 400A       N425BJ
+## 564 25-JUL-2020           Cessna 208B Grand Caravan       XA-FTG
+## 565 26-JUL-2020 Gulfstream Aerospace G-1159A Gulfst       N450BD
+## 566 30-JUL-2020            Beech 200 Super King Air       N515BA
+## 567 01-AUG-2020                Airbus A321-211 (WL)       VP-BAX
+## 568 03-AUG-2020                 Antonov An-72TK-100     RA-74044
+## 569 04-AUG-2020                      Harbin Y-12-II       KAF128
+## 570 07-AUG-2020                 Boeing 737-8HG (WL)       VT-AXH
+## 571 08-AUG-2020                     Canadair CL-215       EC-HET
+## 572 08-AUG-2020                             BAe-125             
+## 573 09-AUG-2020                        BAe-125-800A       XB-RAY
+## 574 10-AUG-2020             Rockwell Sabreliner 75A       N400RS
+## 575 12-AUG-2020                 Beech B200 King Air       N316JP
+## 576 13-AUG-2020                     Let L-410UVP-E3       9S-GEN
+## 577 16-AUG-2020           Cessna 208B Grand Caravan       5Y-SAV
+## 578 18-AUG-2020                ATR 72-600 (72-212A)       6V-ASN
+## 579 19-AUG-2020                   Boeing 767-3S2FER       N146FE
+## 580 20-AUG-2020            Beech 200 Super King Air       N198DM
+## 581 22-AUG-2020                      Antonov An-26B       EX-126
+## 582 27-AUG-2020                     Boeing 747SP-21       VQ-BMS
+## 583 28-AUG-2020                    Boeing 767-324ER       N423AX
+## 584 29-AUG-2020                 Dassault Falcon 200       XB-OAP
+## 585 29-AUG-2020                 Boeing 737-81D (WL)       JA73NM
+## 586 07-SEP-2020              Gulfstream G200 Galaxy       PR-AUR
+## 587 07-SEP-2020           Cessna 208B Grand Caravan       N186GC
+## 588 11-SEP-2020           Cessna 208B Grand Caravan     5Y-CDH ?
+## 589 15-SEP-2020                  Beech 200 King Air             
+## 590 18-SEP-2020                             Learjet             
+## 591 19-SEP-2020                           Fokker 50       5Y-MHT
+## 592 21-SEP-2020                          Learjet 35   false reg.
+## 593 22-SEP-2020           Cessna 208B Grand Caravan    HK-4669-G
+## 594 23-SEP-2020                        BAe-125-800A       XB-PYZ
+## 595 25-SEP-2020                     Antonov An-26Sh    76 yellow
+## 596 25-SEP-2020                             BAe-125             
+## 597 27-SEP-2020             Canadair Challenger 600       N100QR
+## 598 28-SEP-2020                        Antonov An-2             
+## 599 29-SEP-2020           Lockheed KC-130J Hercules       166765
+## 600 04-OCT-2020 Gulfstream American G-1159A Gulfstr       N305LR
+## 601 05-OCT-2020                             BAe-125             
+## 602 05-OCT-2020                DHC-6 Twin Otter 300       8Q-TMF
+## 603 10-OCT-2020           Cessna 208B Grand Caravan       5H-NWA
+## 604 10-OCT-2020                Douglas C-54E (DC-4)       N96358
+## 605 14-OCT-2020                      Antonov An-32A    OB-2120-P
+## 606 22-OCT-2020                DHC-6 Twin Otter 300       8Q-TMR
+## 607 23-OCT-2020        Bombardier DHC-8-402Q Dash 8       JA845A
+## 608 29-OCT-2020                   BN-2A-26 Islander       N706MC
+## 609 29-OCT-2020 Gulfstream American G-1159A Gulfstr     N461AR ?
+## 610 30-OCT-2020                  Embraer Phenom 100       PR-LMP
+## 611 31-OCT-2020       Cessna AC-208B Combat Caravan       YI-118
+## 612 05-NOV-2020       Swearingen SA227-AC Metro III       LV-VDJ
+## 613 09-NOV-2020              Rockwell Sabreliner 65       XA-VD.
+## 614 11-NOV-2020                        BAe-125-800B             
+## 615 13-NOV-2020                  Antonov An-124-100     RA-82042
+## 616 15-NOV-2020     Grumman G-1159 Gulfstream II SP       N104VV
+## 617 16-NOV-2020                ATR 72-500 (72-212A)       VT-TMM
+## 618 23-NOV-2020                           DHC-7-110       VP-FBQ
+## 619 23-NOV-2020                           DHC-8-314       C-FEXZ
+## 620 23-NOV-2020                  Beech 200 King Air       HB-GJM
+## 621 26-NOV-2020                          ATR 42-300       C-FAFS
+## 622 30-NOV-2020           Cessna 208B Grand Caravan       C6-AWO
+## 623 01-DEC-2020                DHC-6 Vistaliner 300       P2-ASM
+## 624 02-DEC-2020                      Boeing 737-529       EY-560
+## 625 02-DEC-2020           Cessna 551 Citation II/SP        N48DK
+## 626 05-DEC-2020                 Beech A100 King Air       C-FWYO
+## 627 05-DEC-2020                        BAe-125-800A       N484AR
+## 628 09-DEC-2020                       Antonov An-2R     UR-33642
+## 629 10-DEC-2020 Gulfstream Aerospace G-1159A Gulfst     (N370JL)
+## 630 13-DEC-2020                         Eclipse 500       N686TM
+## 631 19-DEC-2020                        BAe-125-700A     (N326TD)
+## 632 20-DEC-2020               Raytheon Hawker 800XP       N412JA
+## 633 30-DEC-2020            Cessna 208B Supervan 900       PZ-TSK
+##                                                  operator  fat.
+## 1                                Private Airlines Germany  0+ 1
+## 2                                                 WestJet     0
+## 3                                        Sunwing Airlines     0
+## 4                                                 Unknown     0
+## 5                                                 Unknown  0+ 1
+## 6                                           Pineapple Air     0
+## 7                                             Ameriflight     0
+## 8                                        Pegasus Airlines     0
+## 9                                       Afriqiyah Airways     0
+## 10                                     Bismillah Airlines     0
+## 11                           Kazakhstan Air Defence Force     0
+## 12                                             Turkish AF     3
+## 13                                              Air Tribe     0
+## 14                  European Union, lsf AirTraffic Africa     0
+## 15                                         Galeyr Airline     0
+## 16                                                Nestoil     0
+## 17                                                Unknown     0
+## 18                                        China Air Force    12
+## 19                                       Saratov Airlines    71
+## 20                                              Qeshm Air     0
+## 21                                   Iran Aseman Airlines    66
+## 22                                               Dana Air     0
+## 23                             Army Parachute Association     0
+## 24                                     Island Express Air     0
+## 25                                             Strait Air     0
+## 26                             SmartLynx Airlines Estonia     0
+## 27                                                Unknown     0
+## 28                                              Serve Air     0
+## 29                                             Russian AF    39
+## 30                                            MC Aviation    11
+## 31                                     US-Bangla Airlines    51
+## 32                                                Unknown     0
+## 33                                West Coast Air Services     0
+## 34                                            Ameriflight     0
+## 35                  Air Canada Express, opb Jazz Aviation     0
+## 36                             Bald Mountain Air Services     0
+## 37                                                   HOP!     0
+## 38                                        Bighorn Airways     0
+## 39                                        Bighorn Airways     0
+## 40                                                easyJet     0
+## 41                                               Germania     0
+## 42                                                  El Al     0
+## 43                                  Línea Aérea Amaszonas     0
+## 44                                                Aeromar     0
+## 45                                                Aeromar     0
+## 46                                         Lake Clark Air     0
+## 47                                             2M Leasing     0
+## 48                                              Cavok Air     0
+## 49                                      Skydive the Ranch     0
+## 50                            Avis Industrial Corporation     0
+## 51                                           ERG Holdings     0
+## 52                               Union Gas Air Ventures I     0
+## 53                                        MTC Enterprises     0
+## 54                                       Henning Aviation     0
+## 55                                        Mega Aircompany     0
+## 56                                             Korean Air     0
+## 57                                                Airwing     0
+## 58                                            Algerian AF   257
+## 59           Hageland Aviation Services, opf Ravn Connect     0
+## 60                                             Penial Air     0
+## 61                                                US Navy     0
+## 62                                               Ayk Avia     0
+## 63                                              Air China     0
+## 64                                                private     1
+## 65                                                Private     0
+## 66                                   Morningstar Partners     0
+## 67                                          Transwest Air     0
+## 68                                          Transwest Air     0
+## 69                                                private     0
+## 70                                     Southwest Airlines     1
+## 71                                                  Flybe     0
+## 72                                        Delta Air Lines     0
+## 73                                World Atlantic Airlines     0
+## 74                                               Lion Air     0
+## 75                                       Libyan Air Force     3
+## 76                                        Alpine Aviation     0
+## 77                                                Ryanair     0
+## 78                     Endeavor Air, opf Delta Connection     0
+## 79                                        Delta Air Lines     0
+## 80                                                   USAF     9
+## 81                                       Colombian Police     4
+## 82                                     Blueport Trade 121     0
+## 83                                      Aluminios Cortizo     0
+## 84                                                Embraer     0
+## 85                                     Southwest Airlines     0
+## 86                          Lynden Air Cargo, opf PNG Air     0
+## 87                                            Air Niugini     0
+## 88                                                    THY     0
+## 89                                        Asiana Airlines     0
+## 90  Irish Parachute Club, lsf Parachuting Caravan Leasing     2
+## 91                                                private     2
+## 92                                             Makalu Air     2
+## 93                                 Cubana, lsf Global Air   112
+## 94                                               Star Jet     0
+## 95                            Saudi Arabian, lsf Onur Air     0
+## 96                                  Amazonaves Táxi Aéreo     0
+## 97                                             Silver Air     0
+## 98                                            Air Katanga     0
+## 99                                         Titan Drilling     0
+## 100                                         Aeronaves TSM     0
+## 101                           Air Serv Limited, opf UNHAS     0
+## 102                                             Asure Air     0
+## 103                                           Algerian AF     1
+## 104                                               Fly-SAX    10
+## 105                                                ProAir     0
+## 106                                              Aeroserv     0
+## 107                                              Tara Air     0
+## 108                                             Lufthansa     0
+## 109                                                 FIGAS     0
+## 110                                               LinkPNG     0
+## 111                                         Bravo Airways     0
+## 112                                   Spirit Avia Sentosa     0
+## 113               Republic Airlines, opf Delta Connection     0
+## 114                                           Dimonim Air     0
+## 115                                             Eagle Air     4
+## 116                                   Trigana Air Service     0
+## 117                                            Korean Air     0
+## 118                                       Asiana Airlines     0
+## 119                                                   FAA     0
+## 120                                               Iran AF     0
+## 121                                                Feniks     0
+## 122                                       Maya Island Air     0
+## 123                                        Air Choice One     0
+## 124                                     Flex Air Charters     0
+## 125                                                   GAM     0
+## 126                        TAP Express, opb White Airways     0
+## 127                                       Ookpik Aviation     0
+## 128                                           RAM Express     0
+## 129                                             Rovos Air     1
+## 130                                            Taquan Air     0
+## 131                                          Air Colombia     0
+## 132                                       Everts Air Fuel     0
+## 133                                              Flybondi     0
+## 134                                   Kazairtrans Airline     0
+## 135                          CAF, Highland Lakes Squadron     0
+## 136                                               Textron     0
+## 137                                 OzAir Charter Service     0
+## 138                                             Air Kasai     5
+## 139                                             Atlas Air     0
+## 140                                           Air Vanuatu     0
+## 141                                        Unity Airlines     0
+## 142                                      Air Taxi Vanuatu     0
+## 143                                               private     0
+## 144                                    Aeroméxico Connect     0
+## 145                 Atlantic Transportation of Wilmington     0
+## 146                                                Ju-Air    20
+## 147                                      Supreme Airlines     0
+## 148                                  Alliance Air Charter     0
+## 149                                                   RAM     0
+## 150                                                   THY     0
+## 151                      Horizon Air, opf Alaska Airlines     1
+## 152                                       Vancon Holdings     1
+## 153                                     Hawaiian Airlines     0
+## 154                                        Cathay Pacific     0
+## 155                                       Xiamen Airlines     0
+## 156                      Ostthüringer Fallschirmsportclub     0
+## 157                                               LC Perú     0
+## 158                                     Mandarin Airlines     0
+## 159                                        Stargazer Aero     0
+## 160                                      Bush Air Safaris     0
+## 161                                      Air Canada Rouge     0
+## 162                                                SATENA     0
+## 163                              Beijing Capital Airlines     0
+## 164                                             Air Mizia     0
+## 165                                          Ethiopian AF    18
+## 166                                                 Utair     0
+## 167                            West Coast Aircraft Shares     0
+## 168                                          VOAR Aviação     0
+## 169                     South West Aviation, lsf Slav-Air    20
+## 170                     Gov. of Newfoundland and Labrador     0
+## 171                       Saudi Arabian, lsf ACT Airlines     0
+## 172                                            Russian AF    15
+## 173                                          Starjet Inc.     0
+## 174                                         STS Aviatsija     0
+## 175                                        Berry Aviation     0
+## 176                                  Philippine Air Lines     0
+## 177                                                  ALTA     0
+## 178                                      Kalitta Charters     1
+## 179                                    US-Bangla Airlines     0
+## 180                           Air America Flight Services     2
+## 181                                CGG Aviation Australia     1
+## 182                                           Air Niugini     1
+## 183                                 LATAM Airlines Brasil     0
+## 184                                   Inversiones Moraima     0
+## 185                                              Sudan AF     0
+## 186                                              Sudan AF     0
+## 187             Ravn Connect, opb Frontier Flying Service     0
+## 188                                      Yakutia Airlines     0
+## 189                                 Jhonlin Air Transport     0
+## 190                                     Air India Express     0
+## 191                                      Overland Airways     0
+## 192                                              Lion Air   189
+## 193                                            Air France     0
+## 194                                       Delta Air Lines     0
+## 195                                       Sky Lease Cargo     0
+## 196              2nd Arkhangelsk United Aviation Division     0
+## 197                                   Fly Jamaica Airways     1
+## 198                                           Pakistan AF     0
+## 199                                            Air Astana     0
+## 200                                          PAL Airlines     0
+## 201                                                 SARPA     0
+## 202                                    Perimeter Aviation     0
+## 203                                     Peruvian Airlines     0
+## 204                                               private  &lt;NA&gt;
+## 205                                                   PIA     0
+## 206                                                 ARGa.     4
+## 207                                               Estoair     3
+## 208                                         Dirt Dynamics     0
+## 209                                              Ellinair     0
+## 210                                                  USMC     5
+## 211                                             Par-Avion     1
+## 212                                               Unknown     0
+## 213                                    Desert-Air Safaris     0
+## 214                                             Aerounion     0
+## 215                                            Air Canada     0
+## 216                                               Med Air     0
+## 217                               Africa&#39;s Connection STP     0
+## 218                                    Ethiopian Airlines     0
+## 219                                        Chen Aircrafts     4
+## 220                                                Gomair     7
+## 221                                         Venezuela ANG     0
+## 222                                         D.R. Congo AF     0
+## 223                                     American Airlines     0
+## 224                                              RAF-AVIA     0
+## 225                                   TW 601-C Investment     0
+## 226                              Iran AF, op.for Saha Air    15
+## 227                                                   ASL     0
+## 228                                  Priority Air Charter     2
+## 229                                             Serve Air     0
+## 230                                              Aeroflot     0
+## 231                                           Air Creebec     0
+## 232                                              Onur Air     0
+## 233                              Air Europa, opb Swiftair     0
+## 234                                      Kalitta Charters     0
+## 235                                       Guardian Flight     3
+## 236                                             Air Tindi     2
+## 237                          Tarco Air, opf Sudan Airways     0
+## 238                                    Conquest Air Cargo     1
+## 239                                                Novair     0
+## 240                                         Kenya Airways     0
+## 241                                         Kenya Airways     0
+## 242                                                  RICO     0
+## 243                             Stein&#39;s Aircraft Services     0
+## 244                                                   KLM     0
+## 245                                                   KLM     0
+## 246                             Amazon Air, opb Atlas Air     3
+## 247                                      Biman Bangladesh     1
+## 248                                               US Army     0
+## 249                            Silk Way Business Aviation     0
+## 250                                           LaudaMotion     0
+## 251                                      Tassili Airlines     0
+## 252                                    Banyan Jet Service     0
+## 253                                        Avianca Brasil     0
+## 254                         CommutAir, opf United Express     0
+## 255                                         Amik Aviation     0
+## 256                                            Baires Fly     0
+## 257                                                 LASER    14
+## 258                                          Waffle House     0
+## 259                                    Ethiopian Airlines   157
+## 260                                               private     1
+## 261                      PSA Airlines, opf American Eagle     0
+## 262                      PSA Airlines, opf American Eagle     0
+## 263                                                  RCAF     0
+## 264                                 Golden Wings Aviation     0
+## 265                                  RP Sales and Leasing     0
+## 266                                           Berjaya Air  0+ 1
+## 267                                  Sundance Airport FBO     2
+## 268                                              Iran Air     0
+## 269                                               private     0
+## 270                                        Major Blue Air     1
+## 271                                              Wizz Air     0
+## 272                                                  ENSA     0
+## 273                                    Southwest Airlines     0
+## 274                                               easyJet     0
+## 275                                     Austrian Airlines     0
+## 276                                       Delta Air Lines     0
+## 277                            Sky High Aviation Services     0
+## 278                                     American Airlines     0
+## 279                                      Classic Aviation     3
+## 280                                            Summit Air  1+ 2
+## 281                        Archipiélagos Servicios Aéreos     6
+## 282                                             German AF     0
+## 283                                          Asia Airways     0
+## 284                                  Tropic Ocean Airways     0
+## 285                                               private     0
+## 286                                          Keewatin Air     0
+## 287                                               Ryanair     0
+## 288                                                  Jet2     0
+## 289                               Miami Air International     0
+## 290                                       Buffalo Airways     0
+## 291                          Skyservice Business Aviation     0
+## 292                             Aviation Enterprise Motor     0
+## 293                                              Aeroflot    41
+## 294                               TVPX Aircraft Solutions    13
+## 295                                             Air Inuit     0
+## 296                                      Biman Bangladesh     0
+## 297                                               Unknown     0
+## 298                 Air Canada Express, opb Jazz Aviation     0
+## 299                               Parachutisme Nouvel Air     0
+## 300                                            Taquan Air     1
+## 301                                               private     0
+## 302                                               private     0
+## 303                                               private     2
+## 304                                         Jet Sales LLC     1
+## 305                                      Libyan Air Cargo     0
+## 306                                             Indian AF    13
+## 307                                          TSO Ukrayiny     0
+## 308                                                Feniks     0
+## 309                                       United Airlines     0
+## 310                                           EP Aviation     0
+## 311                                               Unknown     0
+## 312                                       United Airlines     0
+## 313                                           Banco Macro     0
+## 314                                    Southwest Airlines     0
+## 315                                             Navigator     1
+## 316                                        North Star Air     0
+## 317                                           Phoenix Air     0
+## 318                                               Unknown     0
+## 319                                     Yankee Dawdle LLC     0
+## 320                                       Angara Airlines     2
+## 321                                            Transmandu     0
+## 322                                           Western Air     0
+## 323                                          ISR Aviation     0
+## 324                                     EE Operations LLC    10
+## 325                               DOSAAF, Gvardeysky ATSK     0
+## 326                             Warren Transportation LLC     0
+## 327                                              SpiceJet     0
+## 328                                     Afriqiyah Airways     0
+## 329                                        Grant Aviation     0
+## 330                                Gouvernement du Québec     0
+## 331                                        easyJet Europe     0
+## 332                                                   KLM     0
+## 333                                               Unknown     0
+## 334                             Omicron Business Services     0
+## 335                                               Unknown     0
+## 336                                               Unknown     0
+## 337                                          Avia Jet LLC     0
+## 338                                        WestJet Encore     0
+## 339                                                   PIA     0
+## 340                                             Air Peace     0
+## 341                                            Europe Air     0
+## 342                                            Europe Air     1
+## 343                                       Seair Seaplanes     4
+## 344                                  Sierra West Airlines     0
+## 345                          Pakistan Army Aviation Corps 5+ 14
+## 346                                  Equatorial Guinea AF     0
+## 347                                             Lufthansa     0
+## 348                              Cobham Aviation Services     0
+## 349                     American Eagle, opb Mesa Airlines     0
+## 350                                      Everts Air Cargo     0
+## 351                                         Edelweiss Air     0
+## 352                                            Air Canada     0
+## 353                        Liaoning Star General Aviation     0
+## 354                                                DOSAAF     1
+## 355                                              Aerowest     0
+## 356                                          SkyAviatrans     0
+## 357                                          Tropical Air     0
+## 358                                             Alkan Air     2
+## 359                                               private     1
+## 360                                       United Airlines     0
+## 361                                       United Airlines     0
+## 362                                               Unknown     0
+## 363                                                 SARPA     0
+## 364                                     Frontier Airlines     0
+## 365                                               private     0
+## 366                                      Norwegian Air UK     0
+## 367                                               Unknown     0
+## 368                                          Argentine AF     0
+## 369                                         Ural Airlines     0
+## 370                                           JRM Air LLC     0
+## 371                                        Berry Aviation     0
+## 372                                            SafariLink     0
+## 373                                       Delta Air Lines     0
+## 374                                     Mokulele Airlines     0
+## 375                                    Delta Private Jets     0
+## 376                               Morningstar Air Express     0
+## 377                                              Emirates     0
+## 378                                    Club Tiroler Adler     0
+## 379                            International Air Response     0
+## 380                                  Air Charter Services     0
+## 381                                             Air China     0
+## 382                                               private     0
+## 383                          Lenox Handels und Speditions     0
+## 384                                               private     2
+## 385                                              Star Jet     0
+## 386                                          Lionair Inc.     9
+## 387                                       Libyan Airlines     0
+## 388                                               private     2
+## 389                                      Skyline Aviation     0
+## 390                Regional Express Américas, opf Avianca     0
+## 391                Ferreteria e Implementos San Francisco     2
+## 392                                       , op.for GoJump     1
+## 393                                               private     0
+## 394                                               TwoFlex     0
+## 395                    Rimbun Air, opb Carpediem Aviation     4
+## 396                                               private     0
+## 397                                             Auric Air     2
+## 398                                         FlyMontserrat     0
+## 399            Royal Rainmaking and Agricultural Aviation     2
+## 400                                    Bolívar Government     0
+## 401                                               private     0
+## 402                                             Cavok Air     0
+## 403                               The Collings Foundation     7
+## 404                                  Ukraine Air Alliance     5
+## 405                                            Pro by Air     0
+## 406                                    Delta Private Jets     0
+## 407                                         D.R. Congo AF     8
+## 408                              Silverstone Air Services     0
+## 409                                       Skydive Georgia     0
+## 410                                                PenAir     1
+## 411                                    Atlantic Air Cargo     0
+## 412                                                  RCAF     0
+## 413                                        Salvadorian AF     0
+## 414                    Endeavor Air, opf Delta Connection     0
+## 415                                               private     0
+## 416                                               private     0
+## 417                          Blue Water Aviation Services     3
+## 418                                    Abeer Air Services     0
+## 419                                               private     0
+## 420                                          USMX AirLink     0
+## 421                         American Eagle, opb Envoy Air     0
+## 422                                               private     0
+## 423   Surveillance Australia, opf Australian Border Force     0
+## 424                                               private     5
+## 425                               Pilot Point Consultancy     0
+## 426                                          ETG Aviation     0
+## 427                                            Korean Air     0
+## 428                                           Air Namibia     0
+## 429                                        Tahe Havacilik     0
+## 430                                                   THY     0
+## 431                                                 Avior     0
+## 432                                               private     0
+## 433                                        Busy Bee Congo 21+ 6
+## 434                                             Tropicair     0
+## 435                                  Flamingo Air Charter     0
+## 436                                               private     0
+## 437                                               private     0
+## 438                                        North Star Air     0
+## 439                             Business Jet Managers Inc     0
+## 440                                               private     2
+## 441                                               private     0
+## 442                                            Martinaire     1
+## 443                                            Chilean AF    38
+## 444                                    Ethiopian Airlines     0
+## 445                                               private     0
+## 446                                               private     0
+## 447                                             Ritch Air     0
+## 448                                               private     0
+## 449                                       C-GHGR Holdings     0
+## 450                                       WL Aviation LLC     0
+## 451                                               private     9
+## 452                                       United Airlines     0
+## 453                                      Calafia Airlines     2
+## 454                                               Bek Air    12
+## 455                                               private     0
+## 456                                        Air Fast Congo     0
+## 457                                             Sunny Sky     0
+## 458                                              Sudan AF    18
+## 459                                          Sri Lanka AF     4
+## 460                                  Million Air San Juan     0
+## 461                               L.C. Whitford Co., Inc.     0
+## 462                                       L3 Technologies     2
+## 463                        Ukraine International Airlines   176
+## 464                                     American Airlines     0
+## 465                                      South African AF     0
+## 466                                     Nordwind Airlines     0
+## 467                                        LifeMed Alaska     0
+## 468                                    Perimeter Aviation     0
+## 469                                             Air Inuit     0
+## 470                                      Coulson Aviation     3
+## 471                                              S.A. CAA     3
+## 472                                  Compass Aviation LLC     0
+## 473                                      Caspian Airlines     0
+## 474                                                  USAF     2
+## 475                                        WestJet Encore     0
+## 476                       ACT Airlines, opf Saudi Arabian     0
+## 477                                            Air Canada     0
+## 478                                           Kalitta Air     0
+## 479                                        Grant Aviation     0
+## 480                                      Pegasus Airlines     3
+## 481                         Redding Aero Enterprises Inc.     0
+## 482                                            Icelandair     0
+## 483                         Mountain Air Cargo, opf FedEx     0
+## 484                                           Remonia Air     4
+## 485                                   Transportes Torreon     0
+## 486                                                 Utair     0
+## 487                                  SC Cole Aviation LLC     0
+## 488                                                   MAF     0
+## 489                                              T-Cement     0
+## 490                       Lauren Engineers &amp; Constructors     3
+## 491                                               private     0
+## 492                                           Harbour Air     0
+## 493                              Canadian Pacific Railway     0
+## 494             Bearskin Airlines, opb Perimeter Aviation     0
+## 495                               Trans Maldivian Airways     0
+## 496                                Expectra Aviation Inc.     0
+## 497                                   Trigana Air Service     0
+## 498                                            Orlan 2000     0
+## 499                                               private     0
+## 500                                        Sigma Airlines     0
+## 501                                       East Coast Jets     0
+## 502                                               private     0
+## 503                                 Caridad Aviation, LLC     0
+## 504                                               Textron     0
+## 505                                        Legacy Air LLC     0
+## 506                       Executive Business Aviation Inc     0
+## 507                                           AT Aero LLC     0
+## 508                                     Jetleg Management     0
+## 509                                    FedEx, opb CSA Air     0
+## 510                                 Grand Canyon Airlines     0
+## 511                                Omni Air International     0
+## 512                                Platinum Jet Co., Ltd.     0
+## 513                            Thai Airways International     0
+## 514                                               private     2
+## 515                                 Martini Aviation Ltd.     0
+## 516                                               Unknown     2
+## 517                                      Gemini Air Group     0
+## 518                                          Planemasters     1
+## 519                                                   MAF     0
+## 520                                               private     0
+## 521                                          Lionair Inc.     8
+## 522                                  Libyan National Army      
+## 523                                               private     2
+## 524                                               private     0
+## 525                                                  USAF     0
+## 526                                   Inversiones SC 2012     0
+## 527                                       Buffalo Airways     0
+## 528                              Province of Saskatchewan     0
+## 529                               African Express Airways     6
+## 530                                Dos Mil Aerosistema SA     0
+## 531                                                MD Fly     3
+## 532                                               private     0
+## 533                                           Ameriflight     0
+## 534                                       United Aviation     0
+## 535                                      Libyan Air Force     0
+## 536                                               Unknown     0
+## 537                                             Swift Air     0
+## 538                                        McWilliams LLC     0
+## 539                                          Brazilian AF     0
+## 540                                                   PIA 97+ 1
+## 541                                               private     0
+## 542                                               private     0
+## 543                                               private     0
+## 544            Kapowsin Air Sports, opf Skydive San Diego     0
+## 545                                                  USAF     0
+## 546                               Gama Aviation Signature     0
+## 547                                           S7 Airlines     0
+## 548                                         Ural Airlines     0
+## 549                                               private     1
+## 550                               Nordic Aviation Capital     0
+## 551                                               private     0
+## 552                                               private     0
+## 553                                               private     0
+## 554                                               private     0
+## 555                                             Zeus-Avia     2
+## 556                                   Tropic Air Charters     0
+## 557                                    Blue Bird Aviation     0
+## 558                                        Turkish Police     7
+## 559                                       Skyjet Aviation     0
+## 560                                               Phoenix  &lt;NA&gt;
+## 561                                               private     0
+## 562                                    Ethiopian Airlines     0
+## 563                                            N425BJ LLC     0
+## 564                                        AX Transporter     0
+## 565                                               private     0
+## 566                                               private     0
+## 567                                              Aeroflot     0
+## 568                                   UTair-Cargo, opf UN     0
+## 569                                             Kenyan AF     0
+## 570                                     Air India Express    21
+## 571                                    ANEPC, opb Babcock     1
+## 572                                               private     0
+## 573                                               private     0
+## 574                                               private     2
+## 575                                               private     0
+## 576                                       Doren Air Congo     4
+## 577                                             City Link     0
+## 578                                           Air Senegal     0
+## 579                                                 FedEx     0
+## 580                                             Bomac Air     1
+## 581                                   South West Aviation     7
+## 582                           Las Vegas Sands Corporation     0
+## 583                                Omni Air International     0
+## 584                                               private     0
+## 585                                      Skymark Airlines     0
+## 586                                                W.R.V.     0
+## 587                                 Grand Canyon Airlines     0
+## 588                                               Unknown     0
+## 589                                               private     0
+## 590                                               private     0
+## 591         Silverstone Air Services, opf Saacid Airlines     0
+## 592                                               private     0
+## 593                                               private     0
+## 594                                               private     4
+## 595                                     Ukraine Air Force    26
+## 596                                               private  &lt;NA&gt;
+## 597                                               private     0
+## 598                                               Unknown     0
+## 599                                                  USMC     0
+## 600                                               private     0
+## 601                                               private     0
+## 602                               Trans Maldivian Airways     0
+## 603                                        Duk Air Travel     0
+## 604                                       Alaska Air Fuel     0
+## 605                                        AerCaribe Peru     0
+## 606                               Trans Maldivian Airways     0
+## 607                                   Oriental Air Bridge     0
+## 608                         St. Bernard Parish Government     0
+## 609                                               private     3
+## 610                                               TRACBEL     0
+## 611                                              Iraqi AF     2
+## 612                                Dos Mil Aerosistema SA     0
+## 613                                               private     1
+## 614                                               private     0
+## 615                                           Volga-Dnepr     0
+## 616                                               private     0
+## 617                                                TruJet     0
+## 618                              British Antarctic Survey     0
+## 619                                      Voyageur Airways     0
+## 620                                          Air-Glaciers     0
+## 621                                Calm Air International     0
+## 622                           Royal Bahamas Defence Force     0
+## 623                                             Air Sanga     0
+## 624                                          Air Djibouti     0
+## 625                                Aviation Star S II LLC     0
+## 626                               Airco Aircraft Charters     0
+## 627                                               private  &lt;NA&gt;
+## 628                                               private     1
+## 629                                               private     0
+## 630                                               private     0
+## 631                                               private     1
+## 632                                             Talon Air     0
+## 633                                    Blue Wing Airlines     0
+##                 location Var.7 pic cat
+## 1        Kittilä Airp...    NA  NA  A2
+## 2        Toronto-Pear...    NA  NA  A2
+## 3        Toronto-Pear...    NA  NA  A2
+## 4        La Paragua A...    NA  NA  A1
+## 5                  Akobo    NA  NA  A1
+## 6        Governor&#39;s H...    NA  NA  A2
+## 7        Rock Springs...    NA  NA  A2
+## 8        Trabzon Airp...    NA  NA  A1
+## 9        Tripoli-Miti...    NA  NA  C1
+## 10       Jessore Airp...    NA  NA  A2
+## 11  near Zhetygen Air...    NA  NA  A1
+## 12       Hodulluca Me...    NA  NA  A1
+## 13       Brownsville-...    NA  NA  A1
+## 14       Mogadishu Ad...    NA  NA  A2
+## 15       Mogadishu Ad...    NA  NA  A1
+## 16       Abuja Intern...    NA  NA  A1
+## 17       Berlin-Schön...    NA  NA  A2
+## 18       Zhengchang, ...    NA  NA  A1
+## 19  near Stepanovskoy...    NA  NA  A1
+## 20       Mashhad Airp...    NA  NA  A2
+## 21  near Yasuj Airpor...    NA  NA  A1
+## 22       Port Harcour...    NA  NA  A2
+## 23       Netheravon A...    NA  NA  A2
+## 24       Abbotsford A...    NA  NA  A2
+## 25       Havre-Saint-...    NA  NA  A1
+## 26       Tallinn-Lenn...    NA  NA  A1
+## 27       Charallave-Ó...    NA  NA  A2
+## 28       Lubumbashi I...    NA  NA  A1
+## 29  near Latakia-Khme...    NA  NA  A1
+## 30     near Shahr-e Kurd    NA  NA  A1
+## 31       Kathmandu-Tr...    NA  NA  A1
+## 32  near Blue Creek, ...    NA  NA  A1
+## 33        Talbot Bay, WA    NA  NA  A1
+## 34       Hastings Air...    NA  NA  A2
+## 35       Montreal-Pie...    NA  NA  A2
+## 36    near Deadhorse, AK    NA  NA  A2
+## 37       Aurillac Air...    NA  NA  I2
+## 38       Sheridan Air...    NA  NA  O2
+## 39       Sheridan Air...    NA  NA  A2
+## 40       Murcia-San J...    NA  NA  A2
+## 41       Tel Aviv-Ben...    NA  NA  A2
+## 42       Tel Aviv-Ben...    NA  NA  A1
+## 43       Riberalta-Ca...    NA  NA  A2
+## 44       Mexico City-...    NA  NA  A2
+## 45       Mexico City-...    NA  NA  A2
+## 46       Pilot Point ...    NA  NA  A2
+## 47       Orlando-Cent...    NA  NA  A1
+## 48       Gao Airport ...    NA  NA  I2
+## 49  near Gardiner Air...    NA  NA  A1
+## 50       Marion Munic...    NA  NA  A2
+## 51       Houston-Will...    NA  NA  O1
+## 52       Houston-Will...    NA  NA  O1
+## 53       Houston-Will...    NA  NA  O1
+## 54       Houston-Will...    NA  NA  O1
+## 55       Wau Airport ...    NA  NA  A2
+## 56       Osaka-Kansai...    NA  NA  A2
+## 57       Stavanger-So...    NA  NA  A2
+## 58  near Boufarik Air...    NA  NA  A1
+## 59  near Atqasuk Airp...    NA  NA  A2
+## 60       El Barde, So...    NA  NA  A2
+## 61        near Omaha, NE    NA  NA  A1
+## 62         Akola village    NA  NA  A1
+## 63       Zhengzhou-Xi...    NA  NA  H2
+## 64       near Crozet, VA    NA  NA  A1
+## 65       Winnipeg-Jam...    NA  NA  A2
+## 66       Winnipeg-Jam...    NA  NA  O2
+## 67       Prince Alber...    NA  NA  O1
+## 68       Prince Alber...    NA  NA  O1
+## 69       Le Touquet A...    NA  NA  A2
+## 70  near Philadelphia...    NA  NA  A1
+## 71       Newquay-Corn...    NA  NA  A2
+## 72       Atlanta-Will...    NA  NA  A2
+## 73       Alexandria I...    NA  NA  A1
+## 74       Gorontalo-Ja...    NA  NA  A2
+## 75  near Sharara Airs...    NA  NA  A1
+## 76       Sioux Falls ...    NA  NA  A2
+## 77       London-Stans...    NA  NA  A2
+## 78       New York-Joh...    NA  NA  A2
+## 79       New York-Joh...    NA  NA  A2
+## 80  near Savannah/Hil...    NA  NA  A1
+## 81           near Ibagué    NA  NA  A1
+## 82       Johannesburg...    NA  NA  A2
+## 83       Santiago de ...    NA  NA  A2
+## 84       Gavião Peixo...    NA  NA  A2
+## 85       Baltimore/Wa...    NA  NA  A2
+## 86       Port Moresby...    NA  NA  A2
+## 87       Port Moresby...    NA  NA  A2
+## 88       Istanbul-Ata...    NA  NA  A2
+## 89       Istanbul-Ata...    NA  NA  A2
+## 90  near Clonbullogue...    NA  NA  A1
+## 91         near Tuzantán    NA  NA  A1
+## 92           Bahun Khark    NA  NA  A1
+## 93  near Havana-José ...    NA  NA  A1
+## 94       Yangzhou Tai...    NA  NA  A1
+## 95       Jeddah-King ...    NA  NA  A1
+## 96  near Manaus-Aeroc...    NA  NA  A1
+## 97       Tegucigalpa-...    NA  NA  A1
+## 98       Kolwezi Airp...    NA  NA  A2
+## 99       Kolwezi Airp...    NA  NA  A2
+## 100      Saltillo-Pla...    NA  NA  A2
+## 101      Kamonia Airs...    NA  NA  A1
+## 102 near Obo-Mission ...    NA  NA  A2
+## 103 near Biskra Airpo...    NA  NA  A1
+## 104         near Njabini    NA  NA  A1
+## 105      Saint Tropez...    NA  NA  A1
+## 106      Baleni, Gala...    NA  NA  A1
+## 107      Jumla Airpor...    NA  NA  A2
+## 108      Frankfurt In...    NA  NA  O1
+## 109      Beaver Islan...    NA  NA  A2
+## 110      Mendi Airpor...    NA  NA  O1
+## 111      Kiev-Igor Si...    NA  NA  A1
+## 112 near Nabire Airpo...    NA  NA  A2
+## 113      Columbus-Joh...    NA  NA  O1
+## 114      Kenyam Airstrip    NA  NA  C2
+## 115      Souguéta, Ki...    NA  NA  A1
+## 116      Kenyam Airstrip    NA  NA  C2
+## 117      Seoul-Gimpo ...    NA  NA  O2
+## 118      Seoul-Gimpo ...    NA  NA  O2
+## 119      Salt Lake Ci...    NA  NA  A2
+## 120      Damascus Int...    NA  NA  O1
+## 121      Nizhneudinsk...    NA  NA  A2
+## 122      San Pedro Ai...    NA  NA  A2
+## 123      Chicago-O&#39;Ha...    NA  NA  A2
+## 124  near Padek Airstrip    NA  NA  A2
+## 125      Thangool Air...    NA  NA  A2
+## 126      Fez-Sais Air...    NA  NA  A2
+## 127      Parker Lake, NU    NA  NA  A2
+## 128 near Al Hoceima-C...    NA  NA  A2
+## 129 near Pretoria-Won...    NA  NA  A1
+## 130      Mount Jumbo,...    NA  NA  A1
+## 131      San Felipe A...    NA  NA  A2
+## 132      Manley Hot S...    NA  NA  A2
+## 133      Cataratas de...    NA  NA  A2
+## 134      near Al Alamain    NA  NA  A1
+## 135      Burnet Munic...    NA  NA  A1
+## 136      Cork Airport...    NA  NA  A2
+## 137 near Tulsa Intern...    NA  NA  A2
+## 138 near Kamako Airstrip    NA  NA  A1
+## 139      Portsmouth I...    NA  NA  A2
+## 140      Port Vila-Ba...    NA  NA  A2
+## 141      Port Vila-Ba...    NA  NA  O1
+## 142      Port Vila-Ba...    NA  NA  O2
+## 143      Evenki distr...    NA  NA  A1
+## 144      Durango-Guad...    NA  NA  A1
+## 145 near Wilmington-N...    NA  NA  A2
+## 146      near Piz Segnas    NA  NA  A1
+## 147      Lalgarh Airport    NA  NA  A2
+## 148 near San Luis Pot...    NA  NA  A2
+## 149      Istanbul-Ata...    NA  NA  A2
+## 150      Istanbul-Ata...    NA  NA  A2
+## 151      Ketron Islan...    NA  NA  C1
+## 152           Payson, UT    NA  NA  C1
+## 153      Los Angeles ...    NA  NA  A2
+## 154      Roma-Fiumici...    NA  NA  A2
+## 155      Manila-Ninoy...    NA  NA  A1
+## 156      Gera-Leumnit...    NA  NA  A2
+## 157      Lima-Jorge C...    NA  NA  A2
+## 158      Taichung-Chi...    NA  NA  A2
+## 159 near Cape Hattera...    NA  NA  A1
+## 160       Pieri Airstrip    NA  NA  A2
+## 161 near Vancouver In...    NA  NA  A2
+## 162      Santafé del ...    NA  NA  A1
+## 163      Macau Airpor...    NA  NA  A2
+## 164       near Brusartsi    NA  NA  A2
+## 165            near Mojo    NA  NA  A1
+## 166      Adler/Sochi ...    NA  NA  A1
+## 167      Burbank-Bob ...    NA  NA  A2
+## 168          Itapaci, GO    NA  NA  A1
+## 169  near Yirol Airstrip    NA  NA  A1
+## 170      Whitehead Po...    NA  NA  A2
+## 171      Frankfurt In...    NA  NA  A2
+## 172 near Latakia-Khme...    NA  NA  C1
+## 173      Santa Fe Air...    NA  NA  A2
+## 174        near Jagodina    NA  NA  A2
+## 175          Houston, TX    NA  NA  A2
+## 176      Vancouver In...    NA  NA  A2
+## 177      Foz do Iguaç...    NA  NA  A1
+## 178 near Oscoda Wurts...    NA  NA  A1
+## 179      Chittagong-S...    NA  NA  A2
+## 180      Greenville D...    NA  NA  A1
+## 181   near Sendai, Japan    NA  NA  A1
+## 182 near Chuuk/Weno I...    NA  NA  A1
+## 183      São Paulo-Co...    NA  NA  O1
+## 184          near Uriman    NA  NA  A2
+## 185      Khartoum Air...    NA  NA  A1
+## 186      Khartoum Air...    NA  NA  A1
+## 187      Gambell Airp...    NA  NA  A2
+## 188      Yakutsk Airp...    NA  NA  A1
+## 189       Beoga Airstrip    NA  NA  A2
+## 190      Tiruchirappa...    NA  NA  A2
+## 191      Lagos-Murtal...    NA  NA  O1
+## 192  near Tanjung Bungin    NA  NA  A1
+## 193      Paris-Charle...    NA  NA  A2
+## 194      Paris-Charle...    NA  NA  A2
+## 195      Halifax-Stan...    NA  NA  A1
+## 196 near Arkhangelsk-...    NA  NA  A1
+## 197      Georgetown-C...    NA  NA  A1
+## 198      Chaklala-PAF...    NA  NA  A1
+## 199          near Lisbon    NA  NA  A1
+## 200      Stephenville...    NA  NA  A2
+## 201      Bahía Solano...    NA  NA  A2
+## 202      Deer Lake Ai...    NA  NA  A2
+## 203      La Paz-El Al...    NA  NA  A1
+## 204 near Curaçao [Car...    NA  NA  A1
+## 205      Karachi-Jinn...    NA  NA  A2
+## 206 near Jequitaí-Faz...    NA  NA  A1
+## 207     near Memphis, IN    NA  NA  A1
+## 208      Fargo-Hector...    NA  NA  A2
+## 209      Athens-Eleft...    NA  NA  A2
+## 210 near Muroto Cape,...    NA  NA  A1
+## 211     near Hobart, TAS    NA  NA  A1
+## 212      Corozo, Sarstún    NA  NA  O1
+## 213      Mount Gambie...    NA  NA  A2
+## 214      Mexico City-...    NA  NA  O1
+## 215      Hong Kong-Ch...    NA  NA  A2
+## 216      Key West Int...    NA  NA  A2
+## 217      São Tomé Isl...    NA  NA  A2
+## 218      Oslo-Garderm...    NA  NA  A2
+## 219 near Atlanta-Fult...    NA  NA  A1
+## 220 near Kinshasa-N&#39;D...    NA  NA  A1
+## 221      Kamarata Air...    NA  NA  A2
+## 222      Beni Airport...    NA  NA  A1
+## 223      Charlotte-Do...    NA  NA  A2
+## 224      Savonlinna A...    NA  NA  A2
+## 225      Uvalde-Ox Ra...    NA  NA  A1
+## 226        Fat&#39;h Airport    NA  NA  A1
+## 227      Georgetown-O...    NA  NA  A2
+## 228 near Kidron-Stolt...    NA  NA  A1
+## 229      Kinshasa-N&#39;D...    NA  NA  A2
+## 230      Khanty-Mansi...    NA  NA  H2
+## 231      Rouyn Airpor...    NA  NA  A2
+## 232      Antalya Airp...    NA  NA  O1
+## 233      Palma de Mal...    NA  NA  A2
+## 234      Tuscaloosa R...    NA  NA  A2
+## 235        near Kake, AK    NA  NA  A1
+## 236 near Whatì/Lac La...    NA  NA  A1
+## 237      Khartoum-Civ...    NA  NA  H2
+## 238 near Bay Harbor I...    NA  NA  A1
+## 239      Billund Airp...    NA  NA  A2
+## 240      Nairobi-Jomo...    NA  NA  O2
+## 241      Nairobi-Jomo...    NA  NA  O2
+## 242   near Caracaraí, RR    NA  NA  A2
+## 243      Richmond Mun...    NA  NA  A1
+## 244      Amsterdam-Sc...    NA  NA  A2
+## 245      Amsterdam-Sc...    NA  NA  A2
+## 246      Trinity Bay,...    NA  NA  A1
+## 247      Chittagong-S...    NA  NA  H2
+## 248      Pyongtaek-De...    NA  NA  A1
+## 249      Moskva-Shere...    NA  NA  A2
+## 250      London-Stans...    NA  NA  I2
+## 251      Ouargla-Ain ...    NA  NA  A2
+## 252      Eufaula-Weed...    NA  NA  O1
+## 253      Rio de Janei...    NA  NA  A2
+## 254      Presque Isle...    NA  NA  A2
+## 255 near Little Grand...    NA  NA  A2
+## 256      Buenos Aires...    NA  NA  A2
+## 257      Finca La Ben...    NA  NA  A1
+## 258      Atlanta-DeKa...    NA  NA  A2
+## 259 near Addis Ababa-...    NA  NA  A1
+## 260 near San Pedro Pe...    NA  NA  A1
+## 261      Charlotte-Do...    NA  NA  A2
+## 262      Charlotte-Do...    NA  NA  A2
+## 263      near Inuvik, NT    NA  NA  A2
+## 264      Latrobe-West...    NA  NA  A2
+## 265      Orlando Sanf...    NA  NA  A2
+## 266      Kuala Lumpur...    NA  NA  A2
+## 267      Oklahoma Cit...    NA  NA  A1
+## 268      Tehran-Mehra...    NA  NA  A2
+## 269         near Bajamar    NA  NA  A1
+## 270      Matsieng Aer...    NA  NA  C1
+## 271      Bristol Airp...    NA  NA  A2
+## 272      Alonso de Rojas    NA  NA  A2
+## 273 near Nashville In...    NA  NA  A2
+## 274      Belfast Inte...    NA  NA  A2
+## 275      Innsbruck-Kr...    NA  NA  A2
+## 276      Atlanta Hart...    NA  NA  A1
+## 277      Dominica Dou...    NA  NA  A2
+## 278      New York-Joh...    NA  NA  A1
+## 279  near New Albany, MS    NA  NA  A1
+## 280      Lukla-Tenzin...    NA  NA  A1
+## 281 near Puerto Montt...    NA  NA  A1
+## 282      Berlin-Schön...    NA  NA  A1
+## 283        near Khartoum    NA  NA  A1
+## 284      Dry Tortugas...    NA  NA  A1
+## 285      Siegen-Siege...    NA  NA  A1
+## 286      Gillam Airpo...    NA  NA  A2
+## 287      East Midland...    NA  NA  A2
+## 288      East Midland...    NA  NA  A2
+## 289      Jacksonville...    NA  NA  A1
+## 290 near Hay River Ai...    NA  NA  A2
+## 291      Edinburgh-Tu...    NA  NA  A2
+## 292      Vyun, Tompon...    NA  NA  A1
+## 293      Moskva-Shere...    NA  NA  A1
+## 294        near Monclova    NA  NA  A1
+## 295 near Kuujjuarapik...    NA  NA  A2
+## 296      Yangon-Minga...    NA  NA  A1
+## 297 near Uriman Airpo...    NA  NA  A1
+## 298      Toronto-Pear...    NA  NA  A2
+## 299      Saint-Esprit...    NA  NA  A2
+## 300   near Ketchikan, AK    NA  NA  A1
+## 301      Chico de Cha...    NA  NA  C1
+## 302          Zhuravskoye    NA  NA  A1
+## 303 near Indianapolis...    NA  NA  A1
+## 304 near Fort Lauderd...    NA  NA  A1
+## 305      Tripoli Inte...    NA  NA  C1
+## 306            near Lipo    NA  NA  A1
+## 307      Svyatoshyns&#39;...    NA  NA  A2
+## 308 near Kyren, Tunki...    NA  NA  A2
+## 309      Denver Inter...    NA  NA  A2
+## 310      Kiunga Airpo...    NA  NA  A2
+## 311      Río Chixoy, ...    NA  NA  A1
+## 312      Newark-Liber...    NA  NA  A1
+## 313      Joaquín V. G...    NA  NA  A2
+## 314      Pittsburgh-G...    NA  NA  A2
+## 315 near Rodina villa...    NA  NA  A1
+## 316 near Fort Hope Ai...    NA  NA  A2
+## 317 near Mlyny, Polta...    NA  NA  A1
+## 318      Parque Nacio...    NA  NA  O1
+## 319      Sacramento-M...    NA  NA  A1
+## 320      Nizhneangars...    NA  NA  A1
+## 321      Canaima Airp...    NA  NA  A1
+## 322      Nassau-Lynde...    NA  NA  O2
+## 323      Plant City-B...    NA  NA  A2
+## 324      Dallas-Addis...    NA  NA  A1
+## 325      near Gvardeysky    NA  NA  A2
+## 326      Dallas-Addis...    NA  NA  O1
+## 327      Mumbai-Chhat...    NA  NA  A1
+## 328      Tripoli-Miti...    NA  NA  C2
+## 329      Bethel Airpo...    NA  NA  A1
+## 330 near Roberval Air...    NA  NA  A2
+## 331      Amsterdam-Sc...    NA  NA  A2
+## 332      Amsterdam-Sc...    NA  NA  A2
+## 333 near Raduga, Novo...    NA  NA  A1
+## 334      Orlando Exec...    NA  NA  A2
+## 335      Graham Creek...    NA  NA  C1
+## 336      Novoshchedri...    NA  NA  A1
+## 337      Mesquite Mun...    NA  NA  A1
+## 338      Edmonton Int...    NA  NA  A2
+## 339      Gilgit Airpo...    NA  NA  A2
+## 340      Lagos-Murtal...    NA  NA  A2
+## 341      Al Jufra Air...    NA  NA  C1
+## 342      Al Jufra Air...    NA  NA  C1
+## 343      Addenbroke I...    NA  NA  A1
+## 344      El Paso Inte...    NA  NA  A2
+## 345      Mora Kalu, R...    NA  NA  A1
+## 346   near Grand Batanga    NA  NA  A1
+## 347      Frankfurt In...    NA  NA  A1
+## 348      Perth Airpor...    NA  NA  A2
+## 349      Dallas/Fort ...    NA  NA  A2
+## 350      Candle 2 Air...    NA  NA  A2
+## 351      Vancouver In...    NA  NA  A2
+## 352      Vancouver In...    NA  NA  A2
+## 353      Longmen Farm...    NA  NA  A2
+## 354       near Fakhrabad    NA  NA  A1
+## 355      Aarhus Airpo...    NA  NA  A1
+## 356      Misrata Inte...    NA  NA  C1
+## 357      Mafia Airpor...    NA  NA  A1
+## 358 near Mayo Airport...    NA  NA  A1
+## 359 near Los Ángeles-...    NA  NA  A1
+## 360      San Francisc...    NA  NA  A2
+## 361      San Francisc...    NA  NA  A2
+## 362      Las Pilas, C...    NA  NA  C1
+## 363      Bahía Solano...    NA  NA  A1
+## 364      Orlando Inte...    NA  NA  A2
+## 365      Nassau-Lynde...    NA  NA  A2
+## 366      London-Gatwi...    NA  NA  A2
+## 367      El Ramonal, ...    NA  NA  C1
+## 368   near Base Marambio    NA  NA  A2
+## 369 near Zhukovsky In...    NA  NA  A1
+## 370      Elizabethton...    NA  NA  A1
+## 371      San Marcos R...    NA  NA  A2
+## 372      Kichwa Tembo...    NA  NA  A2
+## 373      Ponta Delgad...    NA  NA  A2
+## 374      Kapalua Airp...    NA  NA  A2
+## 375      Oroville Air...    NA  NA  A1
+## 376      Vancouver In...    NA  NA  A2
+## 377      Dubai Airpor...    NA  NA  O2
+## 378      Gmunden Airf...    NA  NA  A2
+## 379      Santa Barbar...    NA  NA  A2
+## 380      Aligarh Airport    NA  NA  A1
+## 381      Beijing-Capi...    NA  NA  A1
+## 382      Selektsionny...    NA  NA  A2
+## 383      Egelsbach Ai...    NA  NA  A2
+## 384      Lake Syuryun...    NA  NA  A1
+## 385      El Monte-San...    NA  NA  A1
+## 386      Pansol, Cala...    NA  NA  A1
+## 387      Tripoli-Miti...    NA  NA  C2
+## 388    near Nueva Cajolá    NA  NA  A1
+## 389      Milano-Malpe...    NA  NA  A2
+## 390      Manizales-La...    NA  NA  A2
+## 391 near Toledo-Expre...    NA  NA  A1
+## 392 near Gransee Airf...    NA  NA  A1
+## 393       Chencoh, Ho...    NA  NA  C2
+## 394 near Manaus-Eduar...    NA  NA  A1
+## 395 near Kampung Mamo...    NA  NA  A1
+## 396      Pepperell Ai...    NA  NA  A2
+## 397      Seronera Air...    NA  NA  A1
+## 398      Montserrat-J...    NA  NA  A2
+## 399      Moo 2, Sai Y...    NA  NA  A1
+## 400      San Salvador...    NA  NA  A2
+## 401      Blue Creek, ...    NA  NA  A1
+## 402      Liverpool In...    NA  NA  A2
+## 403      Windsor Lock...    NA  NA  A1
+## 404 near Lviv-Danylo ...    NA  NA  A1
+## 405      Charleston I...    NA  NA  A2
+## 406      Fort Myers-S...    NA  NA  A2
+## 407            near Kole    NA  NA  A1
+## 408 near Nairobi-Wils...    NA  NA  A1
+## 409      Cedartown-Po...    NA  NA  A2
+## 410      Unalaska-Tom...    NA  NA  A1
+## 411 near Nassau-Lynde...    NA  NA  A1
+## 412      Trenton Cana...    NA  NA  O1
+## 413      San Salvador...    NA  NA  A2
+## 414 near Atlanta Hart...    NA  NA  A2
+## 415      Palajuyú, Si...    NA  NA  A1
+## 416      Sipacate, Es...    NA  NA  A1
+## 417      Family Lake,...    NA  NA  A1
+## 418      Kolnyang County    NA  NA  A1
+## 419      Vista Hermos...    NA  NA  C1
+## 420      San Jose Cab...    NA  NA  A2
+## 421      Chicago-O&#39;Ha...    NA  NA  A2
+## 422                Petén    NA  NA  C1
+## 423      Darwin Airpo...    NA  NA  A2
+## 424      Maraú-Barra ...    NA  NA  A1
+## 425      San Antonio ...    NA  NA  A1
+## 426      San Antonio ...    NA  NA  A1
+## 427      Frankfurt In...    NA  NA  A2
+## 428      Frankfurt In...    NA  NA  A2
+## 429      Odessa-Centr...    NA  NA  A2
+## 430      Odessa-Centr...    NA  NA  A2
+## 431      Bogotá-Eldor...    NA  NA  A1
+## 432      Saint-Jean d...    NA  NA  A1
+## 433 near Goma Airport...    NA  NA  A1
+## 434              Gasmata    NA  NA  H2
+## 435      Black Point ...    NA  NA  A2
+## 436 near El Picudo, S...    NA  NA  C1
+## 437 near San Andrés V...    NA  NA  A1
+## 438 near Sachigo Lake...    NA  NA  A2
+## 439      Detroit-Cole...    NA  NA  A2
+## 440      Sayaxché, Petén    NA  NA  C1
+## 441 near Chan Chen, C...    NA  NA  C1
+## 442 near Victoria Reg...    NA  NA  A1
+## 443 near King George ...    NA  NA  A1
+## 444      Juba Airport...    NA  NA  A2
+## 445               Quiché    NA  NA  C1
+## 446      Sarteneja ai...    NA  NA  C1
+## 447      Visalia Airp...    NA  NA  A2
+## 448      El Chico, Re...    NA  NA  C1
+## 449 near Scottsbluff, NE    NA  NA  A2
+## 450      Fresno Yosem...    NA  NA  C1
+## 451 near Charallave-Ó...    NA  NA  A1
+## 452      Denver Inter...    NA  NA  A2
+## 453        near Tastiota    NA  NA  A1
+## 454 near Almaty Airpo...    NA  NA  A1
+## 455      Santa Monica...    NA  NA  A1
+## 456      Kamina Airpo...    NA  NA  A2
+## 457    near Otamendi, BA    NA  NA  A2
+## 458 near Geneina Airp...    NA  NA  A1
+## 459        near Haputale    NA  NA  A1
+## 460      San Juan-Fer...    NA  NA  A1
+## 461      Morristown M...    NA  NA  A2
+## 462      Manda Bay-Ca...    NA  NA  C1
+## 463       near Sabashahr    NA  NA  C1
+## 464      New York-La ...    NA  NA  A2
+## 465      Goma Airport...    NA  NA  A1
+## 466      Antalya Airp...    NA  NA  A1
+## 467 near Unalaska-Tom...    NA  NA  A1
+## 468      Shamattawa A...    NA  NA  A2
+## 469      Scheffervill...    NA  NA  A2
+## 470      near Cooma, NSW    NA  NA  A1
+## 471    near Friemersheim    NA  NA  A1
+## 472      San Juan-Fer...    NA  NA  A2
+## 473      Bandar Mahsh...    NA  NA  A1
+## 474     near Sharana FOB    NA  NA  A1
+## 475      Terrace Airp...    NA  NA  A2
+## 476      Dammam-King ...    NA  NA  A2
+## 477      Madrid-Baraj...    NA  NA  I2
+## 478      Los Angeles ...    NA  NA  A2
+## 479      Hooper Bay A...    NA  NA  A2
+## 480      Istanbul-Sab...    NA  NA  A1
+## 481 near Eureka-Murra...    NA  NA  A2
+## 482      Keflavík Int...    NA  NA  A2
+## 483      Baltimore/Wa...    NA  NA  A2
+## 484   near Fairmount, GA    NA  NA  A1
+## 485      Rio Bueno-Fu...    NA  NA  O1
+## 486      Usinsk Airpo...    NA  NA  A2
+## 487    near Benbrook, TX    NA  NA  A2
+## 488      Miyanmin Air...    NA  NA  A2
+## 489      Magadan-13 A...    NA  NA  A1
+## 490 near Lake Coleman...    NA  NA  A1
+## 491      Daytona Beac...    NA  NA  A2
+## 492      Vancouver-Co...    NA  NA  O2
+## 493      Calgary Inte...    NA  NA  A2
+## 494      Dryden Regio...    NA  NA  A2
+## 495      Kuredu Islan...    NA  NA  A2
+## 496      Belmar/Farmi...    NA  NA  A2
+## 497      Jayapura-Sen...    NA  NA  A2
+## 498 near Ust-Kamenogo...    NA  NA  A1
+## 499      Toronto-Butt...    NA  NA  O1
+## 500      Sharjah Airp...    NA  NA  A2
+## 501      Altoona Airp...    NA  NA  A2
+## 502      Nashville-Jo...    NA  NA  O1
+## 503      Nashville-Jo...    NA  NA  O1
+## 504      Nashville-Jo...    NA  NA  O1
+## 505      Nashville-Jo...    NA  NA  O1
+## 506      Nashville-Jo...    NA  NA  O1
+## 507      Nashville-Jo...    NA  NA  O1
+## 508      Nashville-Jo...    NA  NA  O1
+## 509      Rhinelander-...    NA  NA  A1
+## 510      Boulder City...    NA  NA  A2
+## 511      Shannon Airp...    NA  NA  A2
+## 512      Vientiane-Wa...    NA  NA  A2
+## 513      Vientiane-Wa...    NA  NA  A2
+## 514      Claura Arrib...    NA  NA  A1
+## 515      Fort Langley...    NA  NA  A2
+## 516      Porlamar-del...    NA  NA  A1
+## 517      Phoenix-Scot...    NA  NA  A1
+## 518 near La Crosse, R...    NA  NA  A1
+## 519      Yenkisa Airs...    NA  NA  A2
+## 520 near Caballo Blan...    NA  NA  A1
+## 521      Manila-Ninoy...    NA  NA  A1
+## 522         near Tarhuna    NA  NA  C1
+## 523 near Las Cruces, ...    NA  NA  A1
+## 524      Laguna del T...    NA  NA  C1
+## 525      Ramstein AFB...    NA  NA  A1
+## 526      Fort Lauderd...    NA  NA  A2
+## 527      Kugaaruk Air...    NA  NA  A2
+## 528 near Lloydminster...    NA  NA  A2
+## 529 near Bardale Airs...    NA  NA  C1
+## 530      San Fernando...    NA  NA  O2
+## 531 near Esquel Airpo...    NA  NA  A1
+## 532      southern Zul...    NA  NA  C1
+## 533      San Antonio ...    NA  NA  A2
+## 534      Tripoli-Miti...    NA  NA  C1
+## 535      Tripoli-Miti...    NA  NA  C1
+## 536       Ulang Airstrip    NA  NA  A2
+## 537 near Victorville-...    NA  NA  A2
+## 538      Houston Inte...    NA  NA  A2
+## 539      Natal Air Fo...    NA  NA  A2
+## 540 near Karachi-Jinn...    NA  NA  A1
+## 541 near Morocoy, Qui...    NA  NA  C1
+## 542       near Sarteneja    NA  NA  A1
+## 543      Región Costa...    NA  NA  C1
+## 544      San Diego-Br...    NA  NA  A2
+## 545      Al Taji Army...    NA  NA  A1
+## 546      Bedford-Hans...    NA  NA  A2
+## 547      Saint Peters...    NA  NA  A2
+## 548      Saint Peters...    NA  NA  A2
+## 549      Machiques de...    NA  NA  C1
+## 550      Aberdeen-Dyc...    NA  NA  A2
+## 551      El Chico, Re...    NA  NA  C1
+## 552           Mapastepec    NA  NA  C1
+## 553 near José Maria M...    NA  NA  C1
+## 554      within Venez...    NA  NA  C1
+## 555 near Kistenevo, B...    NA  NA  A1
+## 556      Fort Lauderd...    NA  NA  A2
+## 557      Beledweyne-U...    NA  NA  A1
+## 558 near Van-Ferit Me...    NA  NA  A1
+## 559      Rouyn Airpor...    NA  NA  A2
+## 560      Buryatia region    NA  NA  A1
+## 561     near Brus Laguna    NA  NA  C1
+## 562      Shanghai Pud...    NA  NA  O1
+## 563      Montgomery R...    NA  NA  A2
+## 564      Holbox Airstrip    NA  NA  A2
+## 565 near El Chal, Pet...    NA  NA  C1
+## 566      Rio Negro, Z...    NA  NA  C1
+## 567      Moskva-Shere...    NA  NA  O2
+## 568      Gao Airport ...    NA  NA  A1
+## 569      Dhobley Airs...    NA  NA  A2
+## 570      Kozhikode-Ca...    NA  NA  A1
+## 571         near Lindoso    NA  NA  A1
+## 572                Ixcán    NA  NA  C1
+## 573 near Maracaibo-La...    NA  NA  C1
+## 574       near Paraguaná    NA  NA  C1
+## 575      Santa Ana, B...    NA  NA  C1
+## 576 near Bukavu-Kavum...    NA  NA  A1
+## 577      New Fangak A...    NA  NA  A1
+## 578      Ziguinchor A...    NA  NA  A2
+## 579      Los Angeles ...    NA  NA  A2
+## 580      Chicago/Rock...    NA  NA  A1
+## 581 near Juba Airport...    NA  NA  A1
+## 582      Lake Charles...    NA  NA  O1
+## 583      Bucharest Ba...    NA  NA  A2
+## 584      Palenque Air...    NA  NA  A1
+## 585 near Tokyo-Haneda...    NA  NA  A2
+## 586      Belo Horizon...    NA  NA  A2
+## 587      Whitmore-Gra...    NA  NA  A2
+## 588      Maji Moto ar...    NA  NA  A1
+## 589      Machiques de...    NA  NA  C1
+## 590                Zanja    NA  NA  C1
+## 591      Mogadishu Ad...    NA  NA  A1
+## 592        Santha Martha    NA  NA  A1
+## 593 near Guaymaral Ai...    NA  NA  A2
+## 594      Alta Verapaz...    NA  NA  A1
+## 595 near Chuhuiv Air ...    NA  NA  A1
+## 596      Catatumbo, E...    NA  NA  C1
+## 597      Sur del Lago...    NA  NA  C1
+## 598         near Martuni    NA  NA  C1
+## 599 near Salton City, CA    NA  NA  A2
+## 600      Machiques, Z...    NA  NA  C1
+## 601      Sergio Butró...    NA  NA  C1
+## 602      Malé-Velana ...    NA  NA  A1
+## 603      Mundri Airstrip    NA  NA  A2
+## 604      Yakataga Air...    NA  NA  A2
+## 605      Iquitos-Coro...    NA  NA  A1
+## 606      Medhafushi W...    NA  NA  A2
+## 607      Fukue Airpor...    NA  NA  A2
+## 608      New Orleans-...    NA  NA  O2
+## 609      Laguna del T...    NA  NA  A1
+## 610      Igaratinga-S...    NA  NA  A1
+## 611           near Balad    NA  NA  A1
+## 612      Mendoza-El P...    NA  NA  A2
+## 613      El Chico, Ch...    NA  NA  A1
+## 614      Parque Nacio...    NA  NA  C1
+## 615      Novosibirsk-...    NA  NA  A1
+## 616      Caño Amarill...    NA  NA  C1
+## 617      Mysore Airpo...    NA  NA  A2
+## 618      North Bay Ai...    NA  NA  O2
+## 619      North Bay Ai...    NA  NA  O2
+## 620      Sion Airport...    NA  NA  A2
+## 621      Naujaat Airp...    NA  NA  A2
+## 622      George Town-...    NA  NA  A2
+## 623      Wobagen Airs...    NA  NA  A2
+## 624      Garowe Airpo...    NA  NA  A2
+## 625      Lufkin Angel...    NA  NA  A2
+## 626      Edmonton Int...    NA  NA  A2
+## 627      Jesús María ...    NA  NA  A1
+## 628 near Zolota Slobo...    NA  NA  A1
+## 629      southern Belize    NA  NA  C1
+## 630      Leadville Ai...    NA  NA  A2
+## 631      Parque Nacio...    NA  NA  A1
+## 632      Farmingdale-...    NA  NA  A1
+## 633      Kawemhaken-L...    NA  NA  A2</code></pre>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
